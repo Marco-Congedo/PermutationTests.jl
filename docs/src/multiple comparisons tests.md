@@ -48,70 +48,84 @@ The following optional keyword arguments are common to all multiple comparisons 
 
 #### Multiple comparisons tests API
 
+---
 ## Correlation test
 ```@docs
 correlationMcTest
 correlationMcTest!
 ```
 
+---
 ## Trend test
 ```@docs
 trendMcTest
 trendMcTest!
 ```
 
+---
 ## Point bi-serial correlation test
 ```@docs
 pointBiSerialMcTest
 ```
 
+---
 ## Student's t-test for independent samples
 ```@docs
 studentMcTestIS
 ```
 
+---
 ## 1-way ANOVA for independent samples
 ```@docs
 anovaMcTestIS
 ```
 
+
+---
 ## Chi-squared test
 ```@docs
 chiSquaredMcTest
 ```
 
+---
 ## Fisher exact test
 ```@docs
 fisherExactMcTest
 ```
 
+---
 ## Student's t-test for repeated measures
 ```@docs
 studentMcTestRM
 studentMcTestRM!
 ```
 
+---
 ## 1-way ANOVA for repeated measures
 ```@docs
 anovaMcTestRM
 ```
 
+---
 ## Cochran Q test
 ```@docs
 cochranqMcTest
 ```
 
+---
 ## McNemar test
 ```@docs
 mcNemarMcTest
 ```
 
+---
 ## One-sample Student's t-test
 ```@docs
 studentMcTest1S
 studentMcTest1S!
 ```
 
+---
 ## Sign test
 ```@docs
 signMcTest

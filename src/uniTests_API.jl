@@ -154,21 +154,17 @@ of booleans or a vector of dicothomous data (only 0 and 1), this function will a
 version of the [point bi-serial correlation test](https://en.wikipedia.org/wiki/Point-biserial_correlation_coefficient).
 However, as shown in the preceeding link, the point bi-serial correlation test is equivalent to 
 the t-test for independent sample, thus it can be tested using the t-test for independent samples,
-which will need many less permutations as compared to a correlation test (see examples below).
-A dedicated function in available with name [`pointBiSerialTest`](@ref),
+which will need many less permutations as compared to a correlation test for an exact test 
+(see examples below). A dedicated function in available with name [`pointBiSerialTest`](@ref),
+which is an alias for [`studentTestIS`](@ref) and allowa the choice to run the test using a 
+correlation- or t-test statistic.
 
 If `x` or `y` represent a *trend*, for example a linear trend given by `[1, 2,...N]`, 
 we otain the permutation-based trend correlation test, which can be used to test the fit of any type of regression
 of `y` on `x` - see [trendTest](@ref).    
 
 if `y` is a shifted version of `x` with a lag ``l``, this function will test the significance of the 
-*autocorrelation* at lag ``l``, similarly to the 
-[Durbin-Watson test](https://en.wikipedia.org/wiki/Durbin%E2%80%93Watson_statistic) (make sure `x` and `y` 
-hold the same number of elements).
-
-if `Y` holds ``L`` shifted versions of `x` at any number of lags, the multiple comparison version
-of this test ([`correlationMcTest`](@ref)) will test simultaneously for all the ``L`` lags
-similarly to the [Ljung-Box or Box-Pierce test](https://en.wikipedia.org/wiki/Ljung%E2%80%93Box_test).
+*autocorrelation at lag ``l``, see the page [Create your own test](@ref).
 
 *Examples*
 ```julia
@@ -635,8 +631,8 @@ tR=pointBiSerialTest(y, ns; direction=Right()) # right-directional test
 tL=pointBiSerialTest(y, ns; direction=Left()) # left-directional test
 ```
 """
-# alias
-pointBiSerialTest = studentTestIS
+pointBiSerialTest = studentTestIS # alias
+
 
 ### Chi-Squared and Fisher Exact Test
 # See `table2vec` for explanation of the table format.
@@ -775,8 +771,7 @@ t=fisherExactTestTest(table)
 tR=fisherExactTest(table; direction=Right())  # right-directional test
 ```
 """
-# alias
-fisherExactTest = chiSquaredTest
+fisherExactTest = chiSquaredTest # alias
 
 
 ### ANOVA for Repeated Measures
