@@ -1,5 +1,6 @@
 #=
 Main Module of the PermutationTests.jl Package
+v0.1.0
 
 MIT License
 Copyright (c) 2024,
