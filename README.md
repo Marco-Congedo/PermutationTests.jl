@@ -4,14 +4,15 @@
 |:---------------------------------------:|
 | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) |
 
-A fast pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
+A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
 
 ---
 ## Installation
 
-Execute the following command in Julia's REPL:
+The package is currently waiting to be added to the general julia registry. In the meanwhile,
+execute the following command in julia's REPL:
 
-    ]add PermutationTests
+    ]add https://github.com/Marco-Congedo/PermutationTests.jl
 
 ---
 ## Available tests
