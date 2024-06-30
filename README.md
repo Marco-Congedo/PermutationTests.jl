@@ -4,7 +4,7 @@
 |:---------------------------------------:|
 | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/dev) |
 
-A pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
+A fast pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
 
 ---
 ## Installation
