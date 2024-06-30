@@ -4,7 +4,7 @@
 
 **PermutationTests.jl** is a pure-[**Julia**](https://julialang.org/) comprehensive, fast and well-documented
 package for performing *univariate* and *multiple comparisons* statistical hypothesis tests based
-on *permutation theory*
+on *permutation theory*.
 
 ---
 ## Installation
@@ -36,14 +36,20 @@ Execute the following command in Julia's REPL:
 ---
 ## Quick start
 
-Example: Pearson correlation univariate test:
+As an example, let's run a Pearson correlation univariate test:
 
 ```
 using PermutationTests
 N=10 # number of observations
-x, y = randn(N), randn(N) # some random Gaussian data for example
+x, y = randn(N), randn(N) # some random Gaussian data
 t = rTest(x, y)
 ```
+
+The test result `t` is a structure and its fields are printed in yellow, 
+for example:
+
+![](/docs/src/assets/Result_example.png)
+
 
 ---
 ## About the authors
