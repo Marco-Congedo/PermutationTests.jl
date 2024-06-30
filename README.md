@@ -40,8 +40,10 @@ As an example, let's run a Pearson correlation univariate test:
 
 ```
 using PermutationTests
-N=10 # number of observations
-x, y = randn(N), randn(N) # some random Gaussian data
+# number of observations
+N=10 
+# some random Gaussian data
+x, y = randn(N), randn(N) 
 t = rTest(x, y)
 ```
 
@@ -55,7 +57,7 @@ are retrived such as
 
 ```
 t.p
-t.npem
+t.nperm
 ```
 ---
 ## About the authors
