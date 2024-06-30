@@ -1,0 +1,14 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
+DocumenterInterLinks = "d12716ef-a0f6-4df4-a9f1-a5a34e75c656"
+DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
+PermutationTests = "dd25e4c7-56c0-4344-ab7a-80f9379a34f4"
+
+[compat]
+Documenter = "1.5"
+DocumenterCitations = "1"
+DocumenterInterLinks = "1"
+DocumenterTools = "0.1"
+PermutationTests = ">=0.1"
+
