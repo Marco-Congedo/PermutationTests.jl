@@ -16,22 +16,22 @@ Execute the following command in Julia's REPL:
 ---
 ## Available tests
 
-| Univariate and Multiple Comparisons Permutation Tests | 
-|:----------|
-| Pearson product-moment correlation | 
-| Trend correlation (fit of any kind of regression) |
-| Point bi-serial correlation* |
-| Student's t for independent samples | 
-| 1-way ANOVA for independent samples | 
-| Χ² for 2xK contingency tables* |
-| Fisher exact test* (2x2 contingency tables) | 
-| Student's t for repeated-measures | 
-| 1-way ANOVA for repeated-measures | 
-| Cochran Q*|
-| McNemar*|
-| One-sample Student's t  | 
-| Sign*|
-|                * for dicothomous data |
+For each *univariate* test there is its *multiple comparisons* counterpart: 
+- Pearson product-moment correlation
+- Trend correlation (fit of any kind of regression)
+- Point bi-serial correlation*
+- Student's t for independent samples
+- 1-way ANOVA for independent samples
+- Χ² for 2xK contingency tables*
+- Fisher exact test* (2x2 contingency tables)
+- Student's t for repeated-measures 
+- 1-way ANOVA for repeated-measures
+- Cochran Q*
+- McNemar*
+- One-sample Student's t  
+- Sign*
+
+* for dicothomous data 
 
 ---
 ## Quick start
