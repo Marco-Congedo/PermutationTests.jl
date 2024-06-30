@@ -15,7 +15,7 @@
 | multcompTests.jl | Multiple comparisons tests |
 | multcompTests_API.jl | API for multiple comparisons tests |
 
-In addition, units for running benchmarks, error control tests and power analysis can be found
+In addition, units for running [benchmarks](@ref "Benchmarks"), [error control](@ref "Error Control") tests and [power](@ref "Power") analysis can be found
 in the [src\extras](https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/src/extras) folder.
 
 A unit to test the main functions is available as well in the 

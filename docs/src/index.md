@@ -11,7 +11,7 @@ Execute the following command in Julia's REPL:
 ---
 #### Requirements 
 
-**Julia**: version ≥ 1.
+**Julia**: version ≥ 1.10
 
 ---
 #### Dependencies
@@ -36,7 +36,7 @@ Given two vectors of ``N`` observations, ``x`` and ``y``, test the null hypothes
 
 ``H_0: r_{(x,y)}=0``, 
 
-where ``r_{(x,y)}`` is the [Pearson product-moment correlation)(https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between ``x`` and ``y``. 
+where ``r_{(x,y)}`` is the [Pearson product-moment correlation](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between ``x`` and ``y``. 
 
 First, we chose a [Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors) ``α`` , typically fixed to Ronald Fisher's classical 0.05 level.
 
@@ -93,18 +93,14 @@ If you do, but you have no idea what a [permutation test](https://en.wikipedia.o
 If you need help to establish what hypothesis test is appropriate for your data, 
 check [this page](@ref "Chose a test").
 
-Permutation tests offer a different way to obtain the p-value usually obtained with well-known parametric tests, such as the *t-test for independent samples*, the *ANOVA for repeated mesures*, etc. 
-
-In contrast to parametric tests, permutation tests may provide the *exact* p-value for the test, not an approximated value based on probability distribution theory, and make use of less stringent assumptions. 
+Permutation tests offer a different way to obtain the p-value usually obtained with well-known parametric tests, such as the *t-test for independent samples*, the *ANOVA for repeated mesures*, etc. In contrast to parametric tests, permutation tests may provide the *exact* p-value for the test, not an approximated value based on probability distribution theory, and make use of less stringent assumptions. 
 
 Moreover, using permutation tests it is possible to use any test-statistic, not just those with known distribution under the null hypothesis, as such distribution is obtained by data permutation.
 
 Permutation tests have been introduced by none other than R.A. Fisher and E.J.G Pitman in the late '30 
 (see the [references](@ref "References")), but has become feasable only thanks to the advent of modern computers.
 
-When multiple hypotheses are to be tested simultaneously, the [multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem) arises: statistical tests perforormed on each hypothesis separatedly cannot control anymore the probability to falsely reject the null hypothesis ([Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors)). 
-
-Using the *max-statistic* (also known as *min-p*) approach, permutation tests control the probabilty to commit one or more Type I error over the total number of hypotheses tested, that is, they control the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family-wise_error_rate) rate (see [Westfall and Young, 1993](@ref "References")).
+When multiple hypotheses are to be tested simultaneously, the [multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem) arises: statistical tests perforormed on each hypothesis separatedly cannot control anymore the probability to falsely reject the null hypothesis ([Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors)). Using the *max-statistic* (also known as *min-p*) approach, permutation tests control the probabilty to commit one or more Type I error over the total number of hypotheses tested, that is, they control the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family-wise_error_rate) rate (see [Westfall and Young, 1993](@ref "References")).
 
 While other multiple comparisons correction procedures controlling the FWE exists, such as the well-known [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or [Holm-Bonferroni](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method), they assume independence of the hypotheses. Instead, permutation tests do not.
 Actually, they naturally adapt to *any degree and form of correlation among the hypotheses*, thus they result more powerful when the hypotheses are not independent (see [power](@ref "Power")).
