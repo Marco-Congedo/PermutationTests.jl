@@ -1,10 +1,10 @@
+## PermutationTests.jl
+
 | **Documentation**  |
 |:---------------------------------------:|
 | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/dev) |
 
-**PermutationTests.jl** is a pure-[**Julia**](https://julialang.org/) comprehensive, fast and well-documented
-package for performing *univariate* and *multiple comparisons* statistical hypothesis tests based
-on *permutation theory*.
+A pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
 
 ---
 ## Installation
@@ -16,7 +16,7 @@ Execute the following command in Julia's REPL:
 ---
 ## Available tests
 
-For each *univariate* test there is its *multiple comparisons* counterpart: 
+All tests have a *univariate* and *multiple comparisons* version: 
 - Pearson product-moment correlation
 - Trend correlation (fit of any kind of regression)
 - Point bi-serial correlation*
