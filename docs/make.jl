@@ -8,7 +8,7 @@ makedocs(
     #remotes = nothing, # ELIMINATE for deploying
     sitename = "PermutationTests",
     #format = Documenter.HTML((prettyurls = false)), # ELIMINATE pretty URL for deploying
-    format = Documenter.HTML()
+    format = Documenter.HTML(),
     authors="Marco Congedo, CNRS, Grenoble, France; Livio Finos, Uni. Padova, Italia",
     modules = [PermutationTests],
     pages =  [
