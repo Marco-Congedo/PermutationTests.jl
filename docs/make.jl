@@ -34,6 +34,7 @@ makedocs(
 # for more information.
 
 deploydocs(
+    # root,
    # target = "build", # add this folder to .gitignore!
    repo = "github.com/Marco-Congedo/PermutationTests.jl.git",
    branch = "gh-pages",
