@@ -236,7 +236,7 @@ Y=[[1., 2., 4., 3., 5., 6., 7., 8., 10., 9.], ([randn(N) for m=1:M-1]...)];
 t = trendMcTest(x, Y; direction=Right()) 
 ```
 """ 
-trendMcTest! = correlationMcTest!
+trendMcTest! = correlationMcTest! # alias
 
 
 ### ANOVA for independent samples
@@ -621,7 +621,6 @@ tR=pointBiSerialMCTest(Y, ns; direction=Right()) # right-directional test
 tL=pointBiSerialMCTest(Y, ns; direction=Left()) # left-directional test
 ```
 """
-# alias
 pointBiSerialMcTest = studentMcTestIS
 
 
@@ -735,8 +734,7 @@ tR=fisherExactMcTest(tables; direction=Right())
 # or tR=Χ²Test(tables; direction=Right())
 ```
 """
-# alias
-fisherExactMcTest = chiSquaredMcTest
+fisherExactMcTest = chiSquaredMcTest # alias
 
 
 ### ANOVA for Repeated Measures

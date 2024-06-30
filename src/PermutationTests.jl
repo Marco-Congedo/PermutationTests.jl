@@ -233,7 +233,8 @@ function Base.show(io::IO, ::MIME{Symbol("text/plain")}, t::Union{UniTest, Multc
         proprej=round((nrej/nhyp)*100, digits=2) # proportion of rejections
         println(io, defaultFont, "Rejected ", nrej, " out of ", nhyp, " hypotheses ", "(", proprej, " %) in ", steps, stepsstr, " with FWE=", round(t.fwe, digits=8))
     end
-    println(io, greyFont, reduce(*, [rand(dice)*"      " for i=1:11]))
+    print(io, greyFont, " ")
+    println(io, reduce(*, [rand(dice)*"      " for i=1:10]))
 
     print(io, separatorFont,".p ", greyFont, t isa UniTest ? "(p-value) " : "(p-values)")
     print(" ") 

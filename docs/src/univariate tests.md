@@ -45,70 +45,83 @@ The following optional keyword arguments are common to all univariate test funct
 
 #### Univariate tests API
 
+---
 ## Correlation test
 ```@docs
 correlationTest
 correlationTest!
 ```
 
+---
 ## Trend test
 ```@docs
 trendTest
 trendTest!
 ```
 
+---
 ## Point bi-serial correlation test
 ```@docs
 pointBiSerialTest
 ```
 
+---
 ## Student's t-test for independent samples
 ```@docs
 studentTestIS
 ```
 
+---
 ## 1-way ANOVA for independent samples
 ```@docs
 anovaTestIS
 ```
 
+---
 ## Chi-squared test
 ```@docs
 chiSquaredTest
 ```
 
+---
 ## Fisher exact test
 ```@docs
 fisherExactTest
 ```
 
+---
 ## Student's t-test for repeated measures
 ```@docs
 studentTestRM
 studentTestRM!
 ```
 
+---
 ## 1-way ANOVA for repeated measures
 ```@docs
 anovaTestRM
 ```
 
+---
 ## Cochran Q test
 ```@docs
 cochranqTest
 ```
 
+---
 ## McNemar test
 ```@docs
 mcNemarTest
 ```
 
+---
 ## One-sample Student's t-test
 ```@docs
 studentTest1S
 studentTest1S!
 ```
 
+---
 ## Sign test
 ```@docs
 signTest
