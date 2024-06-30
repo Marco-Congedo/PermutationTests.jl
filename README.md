@@ -31,7 +31,7 @@ For each *univariate* test there is its *multiple comparisons* counterpart:
 - One-sample Student's t  
 - Sign*
 
-* for dicothomous data 
+(* for dicothomous data) 
 
 ---
 ## Quick start
@@ -46,11 +46,17 @@ t = rTest(x, y)
 ```
 
 The test result `t` is a structure and its fields are printed in yellow, 
-for example:
+looking like this:
 
 ![](/docs/src/assets/Result_example.png)
 
+Thus, for exmple, the p-value and the number of permutations used by the test
+are retrived such as
 
+```
+t.p
+t.npem
+```
 ---
 ## About the authors
 
