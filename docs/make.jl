@@ -36,7 +36,7 @@ makedocs(
 deploydocs(
    # target = "build", # add this folder to .gitignore!
    repo = "github.com/Marco-Congedo/PermutationTests.jl.git",
-   # branch = "gh-pages",
+   branch = "gh-pages",
    # osname = "linux",
    # deps = Deps.pip("pygments", "mkdocs"),
    devbranch = "dev",
