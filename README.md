@@ -1,10 +1,10 @@
+## PermutationTests.jl
+
 | **Documentation**  |
 |:---------------------------------------:|
 | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/dev) |
 
-**PermutationTests.jl** is a pure-[**Julia**](https://julialang.org/) comprehensive, fast and well-documented
-package for performing *univariate* and *multiple comparisons* statistical hypothesis tests based
-on *permutation theory*.
+A pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
 
 ---
 ## Installation
@@ -16,7 +16,7 @@ Execute the following command in Julia's REPL:
 ---
 ## Available tests
 
-For each *univariate* test there is its *multiple comparisons* counterpart: 
+All tests have a *univariate* and *multiple comparisons* version: 
 - Pearson product-moment correlation
 - Trend correlation (fit of any kind of regression)
 - Point bi-serial correlation*
@@ -31,7 +31,7 @@ For each *univariate* test there is its *multiple comparisons* counterpart:
 - One-sample Student's t  
 - Sign*
 
-* for dicothomous data 
+(* for dicothomous data) 
 
 ---
 ## Quick start
@@ -40,17 +40,25 @@ As an example, let's run a Pearson correlation univariate test:
 
 ```
 using PermutationTests
-N=10 # number of observations
-x, y = randn(N), randn(N) # some random Gaussian data
+# number of observations
+N=10 
+# some random Gaussian data
+x, y = randn(N), randn(N) 
 t = rTest(x, y)
 ```
 
 The test result `t` is a structure and its fields are printed in yellow, 
-for example:
+looking like this:
 
 ![](/docs/src/assets/Result_example.png)
 
+Thus, for exmple, the p-value and the number of permutations used by the test
+are retrived such as
 
+```
+t.p
+t.nperm
+```
 ---
 ## About the authors
 
