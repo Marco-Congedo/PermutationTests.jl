@@ -116,6 +116,7 @@ If neither `standardized` nor `centered` is true, the data will be standardized 
 cross-product as test-statistic.
 
 *Directional tests*
+
  - For a right-directional test, the correlation is expected to be positive. A negative correlation will result in a p-value higehr then 0.5.
  - For a left-directional test, the correlation is expected to be negative. A positive correlation will result in a p-value higehr then 0.5.
 
@@ -329,7 +330,9 @@ see [here](@ref "Common kwargs for univariate tests").
 
 *Directional tests*
 
-Not possible. The kwarg `direction` is provided only for consistency with other test functions.
+Possible only for ``𝐾=2``, in which case the test reduces to a Student' t-test for independent samples
+and the test directionality is given by keyword arguement `direction`. 
+See function [`studentTestIS`](@ref) and its multiple comparisons version [`studentMcTestIS`](@ref). 
 
 *Permutation scheme:* under the null hypothesis, the group membership of the observations bears no meaning.
 The exchangeability scheme consists then in reassigning the ``N`` observations in the ``K`` groups 
@@ -498,6 +501,7 @@ If your need to perform exact tests, you may want to set `asPearson` to false.
     as the data will be standardized before running the test. See [`correlationTest`](@ref).
 
 *Directional tests*
+
  - For a right-directional test, ``μ_1`` is expected to exceed ``μ_2``. If the opposite is true, the test will result in a p-value higehr then 0.5.
  - For a left-directional test, ``μ_2`` is expected to exceed ``μ_1``. If the opposite is true, the test will result a p-value higehr then 0.5.
 
@@ -687,7 +691,9 @@ however, its multiple comparison version allows the control of the family-wise e
 
 *Directional tests*
 
-Possible only for ``K=2``, see [`fisherExactTest`](@ref).
+Possible only for ``𝐾=2``, in which case the test reduces to a Fisher exact test 
+and the test directionality is given by keyword arguement `direction`. 
+See function [`fisherExactTest`](@ref) and its multiple comparisons version [`fisherExactMcTest`](@ref). 
 
 *Permutation scheme:* the contingency table is converted to ``K`` vectors holding each as many observations as the corresponding column sum. 
 The conversion is operated internally by function [`table2vec`](@ref).
@@ -836,7 +842,9 @@ see [here](@ref "Common kwargs for univariate tests").
 
 *Directional tests*
 
-Not possible. The kwarg `direction` is provided only for consistency with other test functions.
+Possible only for ``𝐾=2``, in which case the test reduces to a one-sample Student' t-test on the 
+differences of the two treatments and the test directionality is given by keyword arguement `direction`. 
+See function [`studentTest1S`](@ref) and its multiple comparisons version [`studentMcTest1S`](@ref). 
 
 *Permutation scheme:* under the null hypothesis, the order of the ``K`` measurements bears no meaning.
 The exchangeability scheme consists then in reordering the ``K`` measurements within the ``N`` observation units. 
@@ -937,7 +945,7 @@ where ``μ_k`` is the mean of the ``k^{th}`` measure.
 When ``K=2`` the test reduces to the [McNemar test](https://en.wikipedia.org/wiki/McNemar's_test),
 which is the analogous to the Student's t-test for repeated measures taking as input dicothomous data (zeros and ones). 
 
-Input `table` is a ``NxK`` table of zeros and ones, where ``N`` is the number of observations and 
+Input `table` is a ``N \\cdot K`` table of zeros and ones, where ``N`` is the number of observations and 
 ``K`` the repeated measures. Transposed, one such data would look like
 
 
@@ -950,12 +958,12 @@ Input `table` is a ``NxK`` table of zeros and ones, where ``N`` is the number of
 This table shall be given as input such as 
     ```table=[1 1 0; 1 0 0; 1 1 1; 1 1 0; 1 0 1; 1 1 0]```
 
-and it will be converted to the appropriate format by function [`table2vec`](@ref).
+and internally it will be converted to the appropriate format by function [`table2vec`](@ref).
 
 !!! note "Redundant permutations"
     Adding any number of vectors `[0 0 0]` or `[1 1 1]` in any combination to the table here above, 
     yields exactly the same p-value using systematic permutations, but increase the number of permutations
-    to be listed. If such vector exist in your data, you can delete them.
+    to be listed. If such vector exist in your data, you can delete them to obatin a faster test.
 
 For optional keyword arguments, `direction`, `equivalent`, `switch2rand`, `nperm`, `seed` and `verbose`, 
 see [here](@ref "Common kwargs for univariate tests").
@@ -970,7 +978,9 @@ however, its multiple comparison version allows the control of the family-wise e
 
 *Directional tests*
 
-Possible only for ``K=2``, see [`mcNemarTest`](@ref). 
+Possible only for ``𝐾=2``, in which case the test reduces to a MnNemar test 
+and the test directionality is given by keyword arguement `direction`. 
+See function [`mcNemarTest`](@ref) and its multiple comparisons version [`mcNemarMcTest`](@ref). 
 
 *Permutation scheme:* the F-statistic of the 1-way ANOVA for repeated measure is an equivalent test-statistic for the 
 Cochran Q test and the permutation scheme of that ANOVA applies (see [`anovaTestRM`](@ref)).
@@ -1049,7 +1059,6 @@ table=[0 1; 0 1; 1 0; 1 0; 1 0]
 *Directional tests*
 
  - For a right-directional test, ``c`` is expected to exceed ``b``. If the opposite is true, the test will result in a p-value higher then 0.5.
-
  - For a left-directional test, ``b`` is expected to exceed ``c``. If the opposite is true, the test will result in a p-value higher then 0.5.
 
 *Multiple comparisons version:* [`mcNemarMcTest`](@ref)
@@ -1098,7 +1107,6 @@ see [here](@ref "Common kwargs for univariate tests").
 *Directional tests*
 
  - For a right-directional test, ``μ`` is expected to exceeds ``μ_0``. If the opposite is true the test will result in a p-value higehr then 0.5.
-
  - For a left-directional test, ``μ_0`` is expected to exceeds ``μ``. If the opposite is true the test will result in a p-value higehr then 0.5.
 
 *Permutation scheme:* the one-sample t-test test is equivalent to a t-test for two repeated measures, the mean of the difference of which 
