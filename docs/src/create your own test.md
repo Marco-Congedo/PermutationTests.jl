@@ -407,6 +407,10 @@ for the univariate test).
 
 ---
 
+## Useful functions for creating your own tests
+
+---
+
 ```@docs
 _permTest!
 _permMcTest!

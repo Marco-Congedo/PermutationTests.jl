@@ -105,7 +105,7 @@ When multiple hypotheses are to be tested simultaneously, the [multiple comparis
 While other multiple comparisons correction procedures controlling the FWE exists, such as the well-known [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or [Holm-Bonferroni](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method), they assume independence of the hypotheses. Instead, permutation tests do not.
 Actually, they naturally adapt to *any degree and form of correlation among the hypotheses*, thus they result more powerful when the hypotheses are not independent (see [power](@ref "Power")).
 
-Thanks to these characteristics, permutation tests conctitutes the ideal framework for large-scale, possibly correlated, statistical hypothesis testing. This is the case, for instance of *genomics* (gene expression level) and *neuroimaging* (brain voxel activation), where up to hundreds of thousands of hypotheses, often largely correlated, must be tested simultaneusly.
+Thanks to these characteristics, permutation tests conctitutes the ideal framework for large-scale, possibly correlated, statistical hypothesis testing. This is the case, for instance of **genomics** (gene expression level) and **neuroimaging** (brain voxel activation), where up to hundreds of thousands of hypotheses, often largely correlated, must be tested simultaneusly.
 
 ---
 

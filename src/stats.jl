@@ -321,7 +321,7 @@ println(σ(z6)≈1. ? "OK" : "Error") # -> 'OK"
 function Π(x::UniData)
 ```
 
-Product of the elements in `x`
+Product of the elements in `x`. Alias of julia function `prod`.
 """
 Π(𝐱::UniData) = prod(𝐱)
 
