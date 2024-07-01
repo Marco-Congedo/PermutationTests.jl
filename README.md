@@ -1,5 +1,9 @@
 ## PermutationTests.jl
 
+<p align="left">
+  <img src="docs/src/assets/logo.png" height="89"><br>
+</p>
+
 | **Documentation**  |
 |:---------------------------------------:|
 | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) |
