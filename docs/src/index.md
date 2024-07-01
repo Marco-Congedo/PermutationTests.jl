@@ -27,7 +27,7 @@ Execute the following command in Julia's REPL:
 ---
 ## Quick start
 
-Here are some quick examples to show how *Permutationtests.jl* works:
+Here are some quick examples to show how *PermutationTests.jl* works:
 
 ---
 **Univariate test for correlation**
