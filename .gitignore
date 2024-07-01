@@ -36,8 +36,6 @@ docs/site/
 Manifest.toml
 
 # Figures
-src/extras/benchmarks/
-src/extras/power/
-src/extras/error control
+# Add here folders where figures are generated during development
 
 # to check what is ignored use 'git status' in git Bash
