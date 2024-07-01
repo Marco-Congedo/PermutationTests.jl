@@ -27,10 +27,7 @@ published.
 
 For **univariate tests**, the figure below reports the minimum execution time for approximate tests using 10000 random permutations for various numbers of observations (e.g., subjects):
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/benchmarks_uni.png" width="500px" hspace="20">
-```
+![Figure 2](assets/benchmarks_uni.png)
 
 *Legend: IS=independent samples, RM=repeated measures, 1S=one-sample, St.=Student*
 
@@ -42,10 +39,7 @@ correlation/trend test, all types of t-tests, the McNemar test and the sign test
 For **multiple comparisons tests**, the figure below reports the minimum execution time for approximate tests using 10000 random permutations for 12 observations and various numbers of hypotheses:
 
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/benchmarks_multComp.png" width="500px" hspace="20">
-```
+![Figure 3](assets/benchmarks_multComp.png)
 
 *Legend: IS=independent samples, RM=repeated measures, 1S=one-sample, St.=Student*
 
@@ -69,10 +63,7 @@ published.
 As an example, in the figure below the orange line is the p-p plot of the observed p-values versus the expected p-values under the null hypothesis. The plot has been obtained with 1000 simulations of a **univariate Pearson correlation test** by data permutation with four sample sizes (``N``). The blue line traces the expected 
 p-values (control level):
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/errror_uni_corr.png" width="800px" hspace="20">
-```
+![Figure 4](assets/errror_uni_corr.png)
 
 ---
 
@@ -80,10 +71,7 @@ For **multivariate permutation tests**, the figure below show the proportion of 
 across 100 simulations for several tests and 2, 5, 10 or 100 hypotheses tested simultaneously. 
 The FWE is controlled if the proportion is inferior to the nominal FWE level of the test, 0.05 for this simulation.
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/error_multComp.png" width="500px" hspace="20">
-```
+![Figure 5](assets/error_multComp.png)
 
 ---
 ## Power
@@ -101,10 +89,7 @@ As an example, the figure below compares the power of the **univariate Pearson c
 (see section "Slope of a regression line" [here](https://en.wikipedia.org/wiki/Student's_t-test)).
 The power is estimated for four sample size values (``N``) using random Gaussian data and 1000 simulations.
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/power_uni_cor.png" width="500px" hspace="20">
-```
+![Figure 6](assets/power_uni_cor.png)
 
 We see that the power of the permutation and parametric test is very close for all sample size values.
 
@@ -119,11 +104,7 @@ an expected p-value equal to 0.01 for each hypothesis tested separatedly with th
 The hypotheses have geen generated uncorrelated and with three different degrees of uniform correlation such that the expected p-value of the correlation ``𝔼p(ρ)`` is equal to 1, 0.1 or 0.01. See the [preamble](@ref "Preamble")
 for a discussion on correlation among hypotheses. 
 
-
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/power_multComp.png"width="400px" hspace="20">
-```
+![Figure 7](assets/power_multComp.png)
 
 We see that, on the average of all simulations, the multiple comparisons permutation max-t test 
 implemented in this package is always more powerful than the Bonferroni correction procedure,
