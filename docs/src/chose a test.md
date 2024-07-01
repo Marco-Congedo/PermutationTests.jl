@@ -8,10 +8,7 @@ and listed in the table below.
 
 Remark that the kind of tests referred to as *independent samples* and *repeated measures* throughout this documentation are referred to in the schame as *unpaired* and *paired*, respectively. Those terms are synonimous.
 
-```@raw html
-<align="center">
-<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/Discernment.png" width="800px" hspace="20">
-```
+![Figure 1](assets/Discernment.png)
 
 
 |     | Univariate tests          | Multiple comparisons tests | 
