@@ -1,8 +1,7 @@
 ## PermutationTests.jl
 
-| **Documentation**  |
-|:---------------------------------------:|
-| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) |
+|  <img src="docs/src/assets/logo.png" height="90">   | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) |
+|:---------------------------------------:|:--:|
 
 A fast pure-[**Julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
 
@@ -51,6 +50,9 @@ The test result `t` is a structure and its fields are printed in yellow,
 looking like this:
 
 ![](/docs/src/assets/Result_example.png)
+
+
+<img src="docs/src/assets/Result_example.png" width="500">
 
 Thus, for exmple, the p-value and the number of permutations used by the test
 are retrived such as

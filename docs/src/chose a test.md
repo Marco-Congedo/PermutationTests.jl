@@ -2,13 +2,17 @@
 
 The scheme below can help finding the appropriate hypothesis test giving the problem at hand.
 
-Navigate from "**Start**" following the appropriate *ellipse* for your problem to find the solution 
+Navigate from "**Start**" following the appropriate *ellipses* for your problem to find the solution 
 in the *rectangles*. The tests that are available in this package are numbered within parentheses
 and listed in the table below.
 
 Remark that the kind of tests referred to as *independent samples* and *repeated measures* throughout this documentation are referred to in the schame as *unpaired* and *paired*, respectively. Those terms are synonimous.
 
-![Figure 1](assets/Discernment.png)
+```@raw html
+<align="center">
+<img src="assets/Discernment.png" width="800px" hspace="20">
+```
+
 
 |     | Univariate tests          | Multiple comparisons tests | 
 |:----|:--------------------------|:---------------------------|
