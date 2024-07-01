@@ -29,7 +29,7 @@ For **univariate tests**, the figure below reports the minimum execution time fo
 
 ```@raw html
 <align="center">
-<img src="assets/benchmarks_uni.png" width="500px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/benchmarks_uni.png" width="500px" hspace="20">
 ```
 
 *Legend: IS=independent samples, RM=repeated measures, 1S=one-sample, St.=Student*
@@ -44,8 +44,9 @@ For **multiple comparisons tests**, the figure below reports the minimum executi
 
 ```@raw html
 <align="center">
-<img src="assets/benchmarks_multComp.png" width="500px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/benchmarks_multComp.png" width="500px" hspace="20">
 ```
+
 *Legend: IS=independent samples, RM=repeated measures, 1S=one-sample, St.=Student*
 
 We see that for sample size = 12 and 1000 hypotheses, the correlation and t-test for independent samples complete in about 200ms, while the other tests need about 2 to 8 seconds.
@@ -70,7 +71,7 @@ p-values (control level):
 
 ```@raw html
 <align="center">
-<img src="assets/errror_uni_corr.png" width="800px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/errror_uni_corr.png" width="800px" hspace="20">
 ```
 
 ---
@@ -81,7 +82,7 @@ The FWE is controlled if the proportion is inferior to the nominal FWE level of 
 
 ```@raw html
 <align="center">
-<img src="assets/error_multComp.png" width="500px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/error_multComp.png" width="500px" hspace="20">
 ```
 
 ---
@@ -102,7 +103,7 @@ The power is estimated for four sample size values (``N``) using random Gaussian
 
 ```@raw html
 <align="center">
-<img src="assets/power_uni_cor.png" width="500px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/power_uni_cor.png" width="500px" hspace="20">
 ```
 
 We see that the power of the permutation and parametric test is very close for all sample size values.
@@ -121,7 +122,7 @@ for a discussion on correlation among hypotheses.
 
 ```@raw html
 <align="center">
-<img src="assets/power_multComp.png" width="400px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/power_multComp.png"width="400px" hspace="20">
 ```
 
 We see that, on the average of all simulations, the multiple comparisons permutation max-t test 

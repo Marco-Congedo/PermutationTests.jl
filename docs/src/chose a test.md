@@ -10,7 +10,7 @@ Remark that the kind of tests referred to as *independent samples* and *repeated
 
 ```@raw html
 <align="center">
-<img src="assets/Discernment.png" width="800px" hspace="20">
+<img src="https://github.com/Marco-Congedo/PermutationTests.jl/tree/master/docs/src/assets/Discernment.png" width="800px" hspace="20">
 ```
 
 

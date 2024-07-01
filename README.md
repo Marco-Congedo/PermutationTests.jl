@@ -51,7 +51,7 @@ t = rTest(x, y)
 The test result `t` is a structure and its fields are printed in yellow, 
 looking like this:
 
-<img src="docs/src/assets/Result_example.png" width="400">
+<img src="docs/src/assets/Result_example.png" width="380">
 
 Thus, for exmple, the p-value and the number of permutations used by the test
 are retrived such as
