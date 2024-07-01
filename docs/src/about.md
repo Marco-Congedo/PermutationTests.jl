@@ -45,6 +45,13 @@ Independent reviewers for both the code and the documentation are welcome.
 | [Folds.jl](https://github.com/JuliaFolds/Folds.jl) does not work properly for future versions of julia | use keyword argument `threaded=false` for multiple comparison tests |
 
 ---
+## Other relevant packages
+
+- [HypothesisTests.jl](https://github.com/JuliaStats/HypothesisTests.jl)
+- [StaticPermutations.jl](https://github.com/jipolanco/StaticPermutations.jl)
+- [BitPermutations.jl](https://github.com/giacomogiudice/BitPermutations.jl)
+
+---
 ## References
 
 [R.A. Fisher](https://en.wikipedia.org/wiki/Ronald_Fisher) (1935) The Design of Experiments, Hafner.
