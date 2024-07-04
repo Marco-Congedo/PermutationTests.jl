@@ -9,10 +9,9 @@ A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *mu
 ---
 ## Installation
 
-The package is currently waiting to be added to the general julia registry. In the meanwhile,
-execute the following command in julia's REPL:
+Execute the following command in julia's REPL:
 
-    ]add https://github.com/Marco-Congedo/PermutationTests.jl
+    ]add PermutationTests
 
 ---
 ## Available tests
