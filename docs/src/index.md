@@ -86,7 +86,7 @@ t.obsstat # observed test statistics
 ---
 ## Preamble
 
-If you have no idea what a [`statstical hypothesis test`](https://en.wikipedia.org/wiki/Statistical_hypothesis_test) is, most probably you are on the wrong web page.
+If you have no idea what a [`statistical hypothesis test`](https://en.wikipedia.org/wiki/Statistical_hypothesis_test) is, most probably you are on the wrong web page.
 
 If you do, but you have no idea what a [permutation test](https://en.wikipedia.org/wiki/Permutation_test) is, check first my [introduction to permutation tests](https://sites.google.com/site/marcocongedo/science/tutorials?authuser=0).
 
