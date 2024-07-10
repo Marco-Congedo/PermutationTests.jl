@@ -601,8 +601,10 @@ function pointBiSerialTest(<same args and kwargs as `studentTestIS`>)
 
 Actually an alias for [`studentTestIS`](@ref).
 
-Run a [point bi-serial correlation test](https://en.wikipedia.org/wiki/Point-biserial_correlation_coefficient) 
-between an input vector `y` of ``N=N_1+N_2`` elements and a vector ``x``, internally created, with the first ``N_1`` elements equal to `1`
+
+Univariate [point bi-serial correlation test](https://en.wikipedia.org/wiki/Point-biserial_correlation_coefficient) 
+by data permutation. The correlation is between an input vector `y` of ``N=N_1+N_2`` elements and a vector 
+``x``, internally created, with the first ``N_1`` elements equal to `1`
 and the remaining ``N_2`` elements equal to `2`.
 If you need to use other values for the dicothomous variable ``x`` or a different order for its elements, 
 use [`correlationTest`](@ref) instead. 
@@ -747,6 +749,7 @@ end
 ```julia
 function fisherExactTest(<same args and kwargs as `chiSquaredTest`>)
 ```
+Perform an univariate [Fisher exact test](https://en.wikipedia.org/wiki/Fisher's_exact_test) by data permutation.
 Alias for [chiSquaredTest](@ref). It can be used for ``2 \\cdot 2`` contingency tables. 
 The contingency table in this case has form:
 
@@ -1021,7 +1024,8 @@ qTest = cochranqTest # alias
 ```julia
 function mcNemarTest(same args and kwargs as `cochranqTest`>)
 ```
-Alias for [`cochranqTest`](@ref). It can be used for ``2 \\cdot 2`` contingency tables.
+Univariate [McNemar test](https://en.wikipedia.org/wiki/McNemar's_test) by data permutation. Alias 
+for [`cochranqTest`](@ref). It can be used for ``2 \\cdot 2`` contingency tables.
 
 Notice that [`cochranqTest`](@ref) does not accept data input in the 
 form of a contingency table.
@@ -1202,10 +1206,6 @@ signTest(𝐲::Union{BitVector, Vector{Bool}};
 
 ```
 
-**Multiple comparisons version**
-
-[`signMcTest`](@ref)
-
 Univariate [sign test](https://en.wikipedia.org/wiki/Sign_test) by data permutation. The null hypothesis has form 
 
 ``H_0: E(true)=E(false)``,
@@ -1227,6 +1227,10 @@ Permutation scheme and number of permutations for exact tests: as per [`studentT
 The significance of the univariate sign test can be obtained much more efficiently using the binomial distribution.
 This permutation test is therefore not useful at all in the univariate case, 
 however, its multiple comparison version allows the control of the family-wise error rate by data permutations.
+
+**Multiple comparisons version**
+
+[`signMcTest`](@ref)
 
 Return a [UniTest](@ref) structure.
 
@@ -1259,6 +1263,7 @@ signTest(𝐲::Union{BitVector, Vector{Bool}};
 function studentTestRM(<same args and kwargs as `studentTest1S`>)
 ```
 
+Univariate [t-test for repeated measures](https://en.wikipedia.org/wiki/Paired_difference_test) by data permutation.
 Actually an alias for [`studentTest1S`](@ref).
    
 In order to run a t-test for repeated measure, use as data input the vector of differences across measurements.
