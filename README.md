@@ -4,7 +4,7 @@
 |:---------------------------------------:|:--:|
 
 
-A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical hypothesis testing based on *permutation theory*.
+A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical *hypothesis testing* based on *permutation theory*.
 
 ---
 ## Installation

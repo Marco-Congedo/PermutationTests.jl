@@ -100,24 +100,22 @@ Moreover, using permutation tests it is possible to use any test-statistic, not 
 Permutation tests have been introduced by none other than R.A. Fisher and E.J.G Pitman in the late '30 
 (see the [references](@ref "References")), but has become feasable only thanks to the advent of modern computers.
 
-When multiple hypotheses are to be tested simultaneously, the [multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem) arises: statistical tests perforormed on each hypothesis separatedly cannot control anymore the probability to falsely reject the null hypothesis ([Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors)). Using the *max-statistic* (also known as *min-p*) approach, permutation tests control the probabilty to commit one or more Type I error over the total number of hypotheses tested, that is, they control the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family-wise_error_rate) rate (see [Westfall and Young, 1993](@ref "References")).
+When multiple hypotheses are to be tested simultaneously, the [multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem) arises: statistical tests perforormed on each hypothesis separatedly cannot control anymore the probability to falsely reject the null hypothesis ([Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors)). Using the *extremum-statistic* (also known as *min-p*) union-intersection test (see [Winkler et al., 2016](@ref "References")), permutation tests control the probabilty to commit one or more Type I error over the total number of hypotheses tested, regardless the configuration of true and false hypotheses, that is, they control the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family-wise_error_rate) rate in the strong sense (see [Westfall and Young, 1993](@ref "References")).
 
 While other multiple comparisons correction procedures controlling the FWE exists, such as the well-known [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or [Holm-Bonferroni](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method), they assume independence of the hypotheses. Instead, permutation tests do not.
 Actually, they naturally adapt to *any degree and form of correlation among the hypotheses*, thus they result more powerful when the hypotheses are not independent (see [power](@ref "Power")).
 
-Thanks to these characteristics, permutation tests conctitutes the ideal framework for large-scale, possibly correlated, statistical hypothesis testing. This is the case, for instance of **genomics** (gene expression level) and **neuroimaging** (brain voxel activation), where up to hundreds of thousands of hypotheses, often largely correlated, must be tested simultaneusly.
+Thanks to these characteristics, permutation tests conctitute the ideal framework for large-scale, possibly correlated, statistical hypothesis testing. This is the case, for instance of **genomics** (gene expression level) and **neuroimaging** (brain voxel activation), where up to hundreds of thousands of hypotheses, often largely correlated, must be tested simultaneusly.
 
 ---
 
 ## Overview
 
-*PermutationTests.jl* implements several *univariate* permutation tests and for all of them the corresponding *multiple comparisons* permutation tests based on *max-statistic*, with or without the *step down* procedure
-([Holmes et *al.*, 1996; Westfall and Young, 1993](@ref "References")). 
+*PermutationTests.jl* implements several *univariate* permutation tests and for all of them the corresponding *multiple comparisons* permutation tests based on the *min-p* union-intersection principle, with or without the *step down* procedure ([Holmes et *al.*, 1996; Westfall and Young, 1993](@ref "References")). 
 
 For multiple comparisons tests, only tha case when all hypotheses are homogeneous is considered (same test statistic, same number of observations divided in the same number of groups/measurements).
 
 Here is the list of available tests:
-
 
 | Univariate and Multiple Comparisons Permutation Tests | 
 |:----------|

@@ -740,9 +740,10 @@ F=statistic(x, y, AnovaF_RM(); ns=ns)
 pcd=_∑Y²kn_∑y²_∑S²k(y, ns);
 F2=statistic(x, y, AnovaF_RM(); ns=ns, ∑Y²kn=pcd[1], ∑y²=pcd[2], ∑S²k=pcd[3])
 
-# The t test statistic for repeated measures is the same as the one-sample t test statistic 
-# on the difference of the two measurements. The square of those statistics for a 
-# bi-directional test are equal to the above F test statistics. 
+# The t test statistic for repeated measures is the same as the one-sample 
+# t test statistic on the difference of the two measurements. 
+# The square of those statistics for a bi-directional test are equal to 
+# the above F test statistics. 
 
 x=membership(StudentT_1S(), ns.n)
 t=statistic(x, y[1:2:ns.n*2-1].-y[2:2:ns.n*2], StudentT_1S())

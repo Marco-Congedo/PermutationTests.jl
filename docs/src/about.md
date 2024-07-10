@@ -58,7 +58,7 @@ Independent reviewers for both the code and the documentation are welcome.
 
 E.S. Edgington (1995), Randomization Tests, Marcel Dekker Inc.
 
-A.P. Holmes, R.C. Blair, J.D.G Watson, I. Ford (1996) Non-Parametric Analysis of Statistic Images From Functional Mapping Experiments. Journal of Cerebral Blood Flow and Metabolism 16:7-22
+A.P. Holmes, R.C. Blair, J.D.G Watson, I. Ford (1996) Non-Parametric Analysis of Statistic Images From Functional Mapping Experiments. Journal of Cerebral Blood Flow and Metabolism 16:7-22.
 
 F. Pesarin (2001) Multivariate Permutation Tests with applications in Biostatistics. John Wiley & Sons.
 
@@ -67,6 +67,8 @@ E. J. G. Pitman (1937) Significance tests which may be applied to samples from a
 [E. J. G. Pitman](https://en.wikipedia.org/wiki/E._J._G._Pitman) (1938) Significance tests which may be applied to samples from any population. Part III. The analysis of variance test. Biometrika. 29 (3–4): 322–335.
 
 P.H. Westfall, S.S. Young (1993) Resampling-Based Multiple Testing: Examples and Methods for P-Value Adjustment, John Wiley & Sons.
+
+A.M. Winkler, M.A. Webster, J.C. Brooks, et al. (2016) Non-parametric combination and related permutation tests for neuroimaging. Human Brain Mapping, 37(4):1486-511.
 
 ---
 ## Contents
