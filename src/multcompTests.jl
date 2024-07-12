@@ -43,13 +43,13 @@ taking as `stat` a test statistic of type [Statistic](@ref) you have declared.
 If not, you never need this function.
 """
 _observedStats(𝐱, 𝐘::UniDataVec, stat::AnovaF_RM, fstat; pcd=nothing, kwargs...) = 
-    [fstat(statistic(𝐱, 𝐲, stat; ∑Y²kn=pcd[i][1], ∑y²=pcd[i][2], ∑S²k=pcd[i][3], kwargs...)) - sqrt(eps()) for (i, 𝐲) ∈ enumerate(𝐘)] 
+    [fstat(statistic(𝐱, 𝐲, stat; ∑Y²kn=pcd[i][1], ∑y²=pcd[i][2], ∑S²k=pcd[i][3], kwargs...)) for (i, 𝐲) ∈ enumerate(𝐘)] 
 
 _observedStats(𝐱, 𝐘::UniDataVec, stat::StudentT_1S, fstat; pcd=nothing, kwargs...) = 
-    [fstat(statistic(𝐱, 𝐲, stat; ∑y²=pcd[i], kwargs...)) - sqrt(eps()) for (i, 𝐲) ∈ enumerate(𝐘)] 
+    [fstat(statistic(𝐱, 𝐲, stat; ∑y²=pcd[i], kwargs...)) for (i, 𝐲) ∈ enumerate(𝐘)] 
 
 _observedStats(𝐱, 𝐘::UniDataVec, stat::ParFreeStatistics, fstat; pcd=nothing, kwargs...) =
-    [fstat(statistic(𝐱, 𝐲, stat; kwargs...)) - sqrt(eps()) for 𝐲 ∈ 𝐘] 
+    [fstat(statistic(𝐱, 𝐲, stat; kwargs...)) for 𝐲 ∈ 𝐘] 
 # ----- #
 
 
@@ -116,7 +116,7 @@ end
 # ----- #
 """
 ```julia
-function _permMcTest!(x::UniData, Y::UniDataVec, ns::nsType, stat::Stat, asStat::AsStat;
+function _permMcTest!(x, Y, ns::nsType, stat::Stat, asStat::AsStat;
             standardized::Bool=false, centered::Bool=false, 
             stepdown::Bool = true,
             fwe::Float64 = 0.05,
@@ -216,7 +216,7 @@ T12_4 = _permMcTest!(μ0σ1(x), [μ0σ1(y) for y in Y], N, CrossProd(), PearsonR
 To check more examples, see the *multcompTests_API.jl* unit located in the *src* github folder
 and function `test_multicompTests()` in the *runtests.jl* unit located in the *test* github folder.
 """
-function _permMcTest!(𝐱::UniData, 𝐘::UniDataVec, ns::nsType, stat::Stat, asStat::AsStat;
+function _permMcTest!(𝐱, 𝐘, ns::nsType, stat::Stat, asStat::AsStat;
             standardized::Bool=false, centered::Bool=false, # means::Tuple=(), sds::Tuple=(), # optional kwa for correlation-like statistics
             stepdown::Bool = true,
             fwe::Float64 = 0.05,
@@ -243,7 +243,8 @@ function _permMcTest!(𝐱::UniData, 𝐘::UniDataVec, ns::nsType, stat::Stat, a
     ####################### START TEST ##############################
 
     # observed statistics for all variables in 𝐘
-    obsStats = _observedStats(𝐱, 𝐘, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...)
+    # eps is to avoid floating point arithmetic errors when comparing the permuted stats
+    obsStats = _observedStats(𝐱, 𝐘, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...) .- sqrt(eps())
 
     verbose && println("Performing a ", threaded ? "(multi-threaded) " : "", "test using ", testtype == :exact ? "$nperm systematic permutations..." : "$nperm random permutations...")
     
@@ -321,7 +322,7 @@ function _permMcTest!(𝐱::UniData, 𝐘::UniDataVec, ns::nsType, stat::Stat, a
                                     verbose && println("Step ", step+1, ": ", length(rejpos), " hypotheses have been rejected")
         end
     
-        # exit while if stepdown=false or if there were or no rejeced hypothesis
+        # exit while stepdown=false or if there were no rejeced hypothesis
         hasRejected = !stepdown || isempty(rejpos) || nSig==length(𝐘) ? false : true                 
 
         step += 1
