@@ -62,7 +62,7 @@ end
 # ----- #
 """
 ```julia
-function _permTest!(x::UniData, y::UniData, ns::nsType, stat::Stat, asStat::AsStat;
+function _permTest!(x, y, ns::nsType, stat::Stat, asStat::AsStat;
                     standardized::Bool=false, centered::Bool=false, 
                     nperm::Int = 20000, 
                     fstat::Function = abs,
@@ -163,7 +163,7 @@ t8_4 = _permTest!(μ0σ1(x), μ0σ1(y), length(x), Covariance(), Covariance();
 To check more examples, see the *uniTests_API.jl* unit located in the *src* github folder
 and function `test_unitests()` in the *runtests.jl* unit located in the *test* github folder.
 """
-function _permTest!(𝐱::UniData, 𝐲::UniData, ns::nsType, stat::Stat, asStat::AsStat;
+function _permTest!(𝐱, 𝐲, ns::nsType, stat::Stat, asStat::AsStat;
                     standardized::Bool=false, centered::Bool=false, # means::Tuple=(), sds::Tuple=(), # optional kwa for correlation-like statistics
                     nperm::Int = 20000, 
                     fstat::Function = abs,

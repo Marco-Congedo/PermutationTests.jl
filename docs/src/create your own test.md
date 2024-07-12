@@ -132,9 +132,10 @@ Creating your own univariate test involves two preliminary steps:
 You then obtain the test just calling the [`_permTest!`](@ref) functions, as we will show.
 
 !!! tip "keep in mind"
-    Argument `fstat` of `_permTest!` by default is the `abs` julia function, which yields a bi-directional test. 
-    If appropriate for the test statistic at hand, use `fstat=identity` for a right-directional test and 
-    `fstat=`[`flip`](@ref) for a left-directional test. 
+    Argument `fstat` of `_permTest!` by default is the `abs` julia function, which yields a bi-directional test for
+    a test-statistic that is distributed symmetrically around zero. For such test-statistics you will use 
+    `fstat=identity` for a right-directional test and `fstat=`[`flip`](@ref) for a left-directional test. Note that this may not be appropriate for your test-statistic! For example, if your test-statistic is not symmetric and a right-tailed
+    test is of interest, you must use `fstat=identity`.
 
 ---
 
@@ -298,12 +299,9 @@ In order to obtain a faster test we will work with standardized
 variables, thus the Pearson correlation is given simply by the 
 cross-product divided by N. 
 
-Note that we will subtract a small constant to all 
-obseved statistics (sqrt(eps())) to avoid numerical errors when 
-comparing the observed statistics to the permuted statistics. 
 =#
 _observedStats(x, Y, stat::MyPearsonR, fstat::Function=abs; kwargs...) = 
-    [fstat((x ⋅ y)/length(x)) - sqrt(eps()) for y ∈ Y]
+    [fstat((x ⋅ y)/length(x)) for y ∈ Y]
 
 #=
 3) Write a function to compute function `fstat` of the mth 
