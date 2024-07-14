@@ -56,11 +56,11 @@ dispersion,
 Π,
 ∑ofΠ,
 statistic,
-_∑y²,
-_∑Y²kn_∑y²_∑S²k,
 μ0,
 σ1,
 μ0σ1,
+_∑Y²kn_∑y²_∑S²k,
+_∑y²,
 # from tools.jl
 flip,
 assignment,
@@ -71,6 +71,7 @@ membership,
 genPerms,
 table2vec,
 # from uniTests.jl
+testStatistic,
 _permTest!,
 # from uniTests_API.jl
 correlationTest!, rTest!,
@@ -90,8 +91,6 @@ studentTest1S!, tTest1S!,
 studentTest1S, tTest1S,
 signTest!, signTest,
 # from multcompTests.jl
-_observedStats,
-_permutedStat,
 _permMcTest!,
 # from multcompTests_API.jl
 correlationMcTest!, rMcTest!,
@@ -123,10 +122,11 @@ const dice = ("⚀", "⚁", "⚂", "⚃", "⚄", "⚅")
 
 # Types
 # Types for input data: All Real, Integers and Boolean (Bits)
-DataType = Union{R, I, Bool} where {R<:Real, I<:Int}
 UniData = Union{AbstractVector{R}, AbstractVector{I}, AbstractVector{Bool}} where {R<:Real, I<:Int}
 UniDataVec = Union{AbstractVector{Vector{R}}, AbstractVector{Vector{I}}, AbstractVector{Vector{Bool}}} where {R<:Real, I<:Int}
 UniDataVec² = Union{AbstractVector{Vector{Vector{R}}}, AbstractVector{Vector{Vector{I}}}, AbstractVector{Vector{Vector{Bool}}}} where {R<:Real, I<:Int}
+DataType = Union{UniData, UniDataVec, UniDataVec²}
+
 
 # Useful types
 IntVec = AbstractVector{I} where I<: Int

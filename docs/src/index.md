@@ -60,7 +60,7 @@ t.nperm # number of permutations used by the test
 
 Given a vector of ``N`` observations ``x`` and ``M`` vectors of ``N`` observations ``y_m``, test simutaneously the ``M`` null hypotheses 
 
-``H_0:r_{(x, y_m)}=0, m=1...M``, 
+``H_0(m):r_{(x, y_m)}=0, m=1...M``, 
 
 where ``r_{(x,y_m)}`` is the Pearson product-moment correlation between ``x`` and the ``m^{th}`` vector ``y_m``. 
 
@@ -133,6 +133,14 @@ Here is the list of available tests:
 | One-sample Student's t  | 
 | Sign*|
 |                * for dicothomous data |
+
+You may also find useful the tests we have created as examples of how to create new tests:
+
+| Univariate and Multiple Comparisons Permutation Tests | 
+|:----------|
+| [Autocorrelation](@ref "Example 1: univariate autocorrelation test") |
+| [Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
+
 
 When the number of permutations is high, *PermutationTests.jl* computes approximate (Monte Carlo) p-values. All test functions switches automatically from systematic to Monte Carlo permutations, but the user can force them to use either one permutation listing procedure.
 
