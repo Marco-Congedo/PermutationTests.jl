@@ -16,67 +16,16 @@ Run `test_multcompTests()` in unit _test.jl to test this unit
   EXPORTED:
 
 _permMcTest! - ultimate function to perform all multiple comparison tests 
-_observedStats - compute all observed statistics for multiple comparison tests
-_permutedStat - compute the ith permuted statistic for multiple comparison tests
+testStatistic - compute the ith observed and permuted statistic for multiple comparison tests
 
   UTILITIES:
 
 _preComputedData - pre-computed data for rep meas ANOVA and one-sample t-test for multiple comparison tests
-_randperm! - generate a random permutation for multiple comparison tests
+_randperm_multComp! - generate a random permutation for multiple comparison tests
 =============================
 =#
 
 ######################################################################################################################################
-
-# ----- #
-"""
-```julia
-function _observedStats(x, Y::UniDataVec, stat::statistic, fstat; pcd=nothing, kwargs...)
-                        where statistic<:Statistic 
-```
-
-Compute obseved statistics for multiple comparisons permutation tests.
-
-If you [create your own test](@ref "Create your own test") you will write a method
-taking as `stat` a test statistic of type [Statistic](@ref) you have declared.
-
-If not, you never need this function.
-"""
-_observedStats(𝐱, 𝐘::UniDataVec, stat::AnovaF_RM, fstat; pcd=nothing, kwargs...) = 
-    [fstat(statistic(𝐱, 𝐲, stat; ∑Y²kn=pcd[i][1], ∑y²=pcd[i][2], ∑S²k=pcd[i][3], kwargs...)) for (i, 𝐲) ∈ enumerate(𝐘)] 
-
-_observedStats(𝐱, 𝐘::UniDataVec, stat::StudentT_1S, fstat; pcd=nothing, kwargs...) = 
-    [fstat(statistic(𝐱, 𝐲, stat; ∑y²=pcd[i], kwargs...)) for (i, 𝐲) ∈ enumerate(𝐘)] 
-
-_observedStats(𝐱, 𝐘::UniDataVec, stat::ParFreeStatistics, fstat; pcd=nothing, kwargs...) =
-    [fstat(statistic(𝐱, 𝐲, stat; kwargs...)) for 𝐲 ∈ 𝐘] 
-# ----- #
-
-
-# ----- #        
-"""
-```julia
-function _permutedStat(x, Y::UniDataVec, i::Int, stat::AnovaF_RM, fstat; pcd=nothing, kwargs...) 
-```
-
-Compute the ``i^{th}`` permuted statistics for the ``i^{th}`` hypothesis, with ``i=1...M``,
-for multiple comparisons permutation tests.
-
-If you [create your own test](@ref "Create your own test") you will write a method
-taking as `stat` a test statistic of type [Statistic](@ref) you have declared.
-
-If not, you never need this function.
-"""
-_permutedStat(𝐱, 𝐘::UniDataVec, i::Int, stat::AnovaF_RM, fstat; pcd=nothing, kwargs...) = 
-    fstat(statistic(𝐱, 𝐘[i], stat; ∑Y²kn=pcd[i][1], ∑y²=pcd[i][2], ∑S²k=pcd[i][3], kwargs...))  
-
- _permutedStat(𝐱, 𝐘::UniDataVec, i::Int, stat::StudentT_1S, fstat; pcd=nothing, kwargs...) = 
-    fstat(statistic(𝐱, 𝐘[i], stat; ∑y²=pcd[i], kwargs...))    
-
-
-_permutedStat(𝐱, 𝐘::UniDataVec, i::Int, stat::ParFreeStatistics, fstat; pcd=nothing, kwargs...) = 
-    fstat(statistic(𝐱, 𝐘[i], stat; kwargs...))  
-# ----- #
 
 
 # ----- #
@@ -84,7 +33,7 @@ _permutedStat(𝐱, 𝐘::UniDataVec, i::Int, stat::ParFreeStatistics, fstat; pc
 _preComputedData(𝐘::UniDataVec, ns, stat::AnovaF_RM) = [_∑Y²kn_∑y²_∑S²k(𝐲, ns) for 𝐲 ∈ 𝐘]
 _preComputedData(𝐘::UniDataVec, ns, stat::StudentT_1S) = [∑of²(𝐲) for 𝐲 ∈ 𝐘] 
 _preComputedData(𝐘::UniDataVec, ns, stat::ParFreeStatistics) = nothing 
-_preComputedData(𝐘::UniDataVec, ns, stat) = nothing # allow calling with a custum statistic
+_preComputedData(𝐘, ns, stat) = nothing # allow calling with custom data types and or custum statistic
 # ----- #
     
 
@@ -96,22 +45,66 @@ _preComputedData(𝐘::UniDataVec, ns, stat) = nothing # allow calling with a cu
 # For OneSampStatistic statistics, the sign of the elements in the 𝐲 vectors of 𝐘 is flipped with probability 0.5. ns is ignored 
 #    Only for this latter case this procedure is algorithmically different as compared to the univariate tests, but here never return anything.
 # Note that instead for exact test only the 𝐱 vector is changed
-_randperm!(𝐱::UniData, 𝐘::UniDataVec, stat::Union{BivStatistic, IndSampStatistic}, rng::MersenneTwister; ns::nsType = 0, ft = nothing) = 
+_randperm_multComp!(𝐱::UniData, 𝐘, stat::Union{BivStatistic, IndSampStatistic}, rng::MersenneTwister; ns::nsType = 0, ft = nothing) = 
     shuffle!(rng, 𝐱)
 
-function _randperm!(𝐱::UniData, 𝐘::UniDataVec, stat::RepMeasStatistic, rng::MersenneTwister; ns = @NamedTuple{n::Int, k::Int}, ft = nothing) 
+function _randperm_multComp!(𝐱::UniData, 𝐘, stat::RepMeasStatistic, rng::MersenneTwister; ns = @NamedTuple{n::Int, k::Int}, ft = nothing) 
     @simd for i=0:ns.n-1 
         @inbounds shuffle!(rng, view(𝐱, (i*ns.k)+1:(i*ns.k)+ns.k)) # shuffling in-place of 𝐱
     end
 end
 
-function _randperm!(𝐱::UniData, 𝐘::UniDataVec, stat::OneSampStatistic, rng::MersenneTwister; ns::nsType = 0, ft::Tuple=(-1.0, 1.0)) 
+function _randperm_multComp!(𝐱::UniData, 𝐘, stat::OneSampStatistic, rng::MersenneTwister; ns::nsType = 0, ft::Tuple=(-1.0, 1.0)) 
     signs = [rand(rng, ft) for i = 1:length(𝐘[1])] # vector of random signa with probability 0.5 (rand pick a number at random from `ft`)
     @simd for i ∈ eachindex(𝐘) 
         @inbounds 𝐘[i] .*= signs # the vector of signs is the same for all variables
     end
 end
 # ----- #
+
+
+
+# ----- #
+"""
+```julia
+
+# METHOD 1
+function testStatistic(x, y, stat::mystat, fstat::Function; 
+                        cpcd=nothing, kwargs...)
+
+# METHOD 2
+function testStatistic(x, Y, i::Int, stat::mystat, fstat::Function; 
+                        cpcd=nothing, kwargs...)
+                        
+        where mystat<:Statistic 
+```
+
+Compute the observed and permuted test statistic for univariate tests (Method 1) or the ``i^{th}`` 
+observed and permuted test statistic for the ``i^{th}`` hypothesis, with ``i=1...M``, 
+for multiple comparisons permutation tests (Method 2).
+
+If you [create your own test](@ref "Create your own test") you will write new methods
+for these functions taking as `stat` a test statistic of type [Statistic](@ref) you have declared.
+
+If not, you never need these functions.
+
+`Y` is a vector of elements (typically, vectors themelves) and the test-statistic is to be computed on `Y[i]`,
+using the permutation vector `x`.
+
+For the `fstat` and `cpcd` argument, see how to [create your own test](@ref "Create your own test").
+
+"""
+testStatistic(𝐱, 𝐘::UniDataVec, i::Int, stat::AnovaF_RM; cpcd=nothing, kwargs...) = 
+    statistic(𝐱, 𝐘[i], stat; ∑Y²kn=cpcd[i][1], ∑y²=cpcd[i][2], ∑S²k=cpcd[i][3], kwargs...)
+
+testStatistic(𝐱, 𝐘::UniDataVec, i::Int, stat::StudentT_1S; cpcd=nothing, kwargs...) = 
+    statistic(𝐱, 𝐘[i], stat; ∑y²=cpcd[i], kwargs...) 
+
+# all other tests implemented in PermutationsTests.jl    
+testStatistic(𝐱, 𝐘::UniDataVec, i::Int, stat::ParFreeStatistics; cpcd=nothing, kwargs...) =
+    statistic(𝐱, 𝐘[i], stat; kwargs...) 
+# ----- #
+
 
 # ----- #
 """
@@ -169,6 +162,11 @@ For `Stat` belonging to [group](@ref "Statistic groups")
  - `RepMeasStatistic` : we have ``K`` measures (*e.g.*, treatements) and ``N`` subjects; `Y` is an M-vector, each one holding the ``K*N`` observations for the ``m^{th}`` hypothesis in a single vector. The ``m^{th}`` vector ``y_m`` is such as `[Y[m][1];...;Y[m][N]]`, where each vector Y[1][n], for ``n=1…N``, holds the observations for the ``K`` treatments and `x=collect(1:K*N)` (see [`membership(::RepMeasStatistic)`](@ref)). 
  - `OneSampStatistic` : We have ``N`` observations (*e.g.*, subjects); `Y` is an ``M``-vector, each one holding the ``N`` observations and `x=ones(Int, N)` (see [`membership(::OneSampStatistic)`](@ref)).
 
+
+!!! note "Nota Bene"
+    In all cases `x` is treated as the permutation vector that will be permuted before calling the [`testStatistic`](@ref)
+    function for each of the elements in `Y`.
+
 Optional keyword arguments `switch2rand`, `nperm`, `standardized`, `centered`, `seed`, `fstat`, `compfunc` and `verbose`
 have the same meaning as in the [`_permTest!`](@ref) function.
 
@@ -176,7 +174,7 @@ If `threaded` is true (default) the function is multi-threaded if the product of
     observations, and permutations exceed 500 millions.
 If you have unexpected problems with the function, try setting `threaded` to false.
 
-For the `cpcd` argument, see [create you own test](@ref "Create your own test").
+For the `cpcd` and `kargs...` arguments, see [create you own test](@ref "Create your own test").
 
 Return a [MultcompTest](@ref) structure.
 
@@ -227,16 +225,17 @@ function _permMcTest!(𝐱, 𝐘, ns::nsType, stat::Stat, asStat::AsStat;
             seed::Int = 1234,
             threaded::Bool = Threads.nthreads()>=4,
             verbose::Bool = true,
-            cpcd = nothing) where {Stat<:Statistic, AsStat<:Statistic}
+            cpcd = nothing,
+            kwargs...) where {Stat<:Statistic, AsStat<:Statistic}
     
     # check that all vectors in 𝐘 have the same length. This is special for multivariate tests
-    length(unique(length(𝐲) for 𝐲 ∈ 𝐘)) ≠ 1 && throw(ArgumentError(📌*" Function _permMcTest!: The vectors in 𝐘 do not have all the same length"))
+    length(unique(length(𝐲) for 𝐲 ∈ 𝐘)) ≠ 1 && throw(ArgumentError(📌*" Function _permMcTest!: The elements (typically, vectors) in 𝐘 do not have all the same length"))
 
     # check arguments and prepare test
-    testtype, nperm, direction, design, kwargs, rng = _prepare_permtest!(𝐱, 𝐘[1], ns, asStat, fstat, nperm, switch2rand, seed, standardized, false)#, (), ())      
+    testtype, nperm, direction, design, mykwargs, rng = _prepare_permtest!(𝐱, 𝐘[1], ns, asStat, fstat, nperm, switch2rand, seed, standardized, false)#, (), ())      
 
-    # pre-computed data in case of some statistics. This is special for multivariate tests    
-    pcd = _preComputedData(𝐘, ns, stat)
+    # pre-computed data in case of some statistics. This is special for multivariate tests. Set to nothing for custom statistics
+    pcd = _preComputedData(𝐘, ns, stat) 
 
 #    println("pcd: ", pcd)
 
@@ -244,7 +243,7 @@ function _permMcTest!(𝐱, 𝐘, ns::nsType, stat::Stat, asStat::AsStat;
 
     # observed statistics for all variables in 𝐘
     # eps is to avoid floating point arithmetic errors when comparing the permuted stats
-    obsStats = _observedStats(𝐱, 𝐘, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...) .- sqrt(eps())
+    obsStats = [fstat(testStatistic(𝐱, 𝐘, i, stat; cpcd=pcd, mykwargs..., kwargs...)) - sqrt(eps()) for i ∈ eachindex(𝐘)]
 
     verbose && println("Performing a ", threaded ? "(multi-threaded) " : "", "test using ", testtype == :exact ? "$nperm systematic permutations..." : "$nperm random permutations...")
     
@@ -279,15 +278,15 @@ function _permMcTest!(𝐱, 𝐘, ns::nsType, stat::Stat, asStat::AsStat;
             P = genPerms(asStat, 𝐱, ns, direction, design) # generate systematic permutations as a lazy iterator
             if asStat isa StudentT_1S # bug fix: for StudentT_1S only, the iterator yields tuples and can be enumerated 
                 for (j, p) in enumerate(P) #  and this iterator works only expliciting the for loop
-                    nullDistr[j] = maxf(_permutedStat(p, 𝐘, i, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...) for i ∈ eachindex(𝐘, accepted) if accepted[i])
+                    nullDistr[j] = maxf(fstat(testStatistic(p, 𝐘, i, stat; cpcd=pcd, mykwargs..., kwargs...)) for i ∈ eachindex(𝐘, accepted) if accepted[i])
                 end
             else # on the other hand the other iterators cannot be enumerated
-                nullDistr = [maxf(_permutedStat(p, 𝐘, i, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...) for i ∈ eachindex(𝐘, accepted) if accepted[i]) for p ∈ P]
+                nullDistr = [maxf(fstat(testStatistic(p, 𝐘, i, stat; cpcd=pcd, mykwargs..., kwargs...)) for i ∈ eachindex(𝐘, accepted) if accepted[i]) for p ∈ P]
             end
         else    # Monte Carlo test
             for j ∈ 1:nperm-1
-                _randperm!(𝐱, 𝐘, asStat, rng; ns) # one of 𝐱, 𝐘 is modified depending on stat to generate a random data permutation
-                nullDistr[j] = maxf(_permutedStat(𝐱, 𝐘, i, stat, fstat; pcd=pcd, cpcd=cpcd, kwargs...) for i ∈ eachindex(𝐘, accepted) if accepted[i])
+                _randperm_multComp!(𝐱, 𝐘, asStat, rng; ns) # one of 𝐱, 𝐘 is modified depending on stat to generate a random data permutation
+                nullDistr[j] = maxf(fstat(testStatistic(𝐱, 𝐘, i, stat; cpcd=pcd, mykwargs..., kwargs...)) for i ∈ eachindex(𝐘, accepted) if accepted[i])
             end
             nullDistr[end] = _condMax(obsStats, accepted)
         end

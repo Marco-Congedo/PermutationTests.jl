@@ -15,11 +15,12 @@
 
 #   REQUIRED PACKAGES : PermutationsTests, Test, Statistics
 
-using Random: randn # julia built-in
+using Random: randn, seed! # julia built-in
 using Test: @test, @testset
 using Statistics: mean, var, std, cov, cor
 using PermutationTests
 
+seed!(12345);
 
 # test all functions in stats.jl
 function test_stats(; tol=0)
@@ -395,20 +396,20 @@ function test_multicompTests(; tol=1e-1)
     # Instead the r-max test rejectes them both at the 0.05 level at the first step.
 
     # 1-Way ANOVA for independent samples 
-    ns=[4, 2, 6] # use even numbers here
+    ns=[6, 8, 6] # use even numbers here
     n=sum(ns)
     isodd(n) && throw(ArgumentError("test_multicompTests(): 1-way independent samples ANOVA test, n must be even"))
-    𝐘=[collect(Base.OneTo(n)).*1.0, rand(n), rand(n)] # only first hypothesis is to be rejected
+    𝐘=[collect(Base.OneTo(n)).*1.0, [100. for i=1:n].+randn(n), [100. for i=1:n].+randn(n)] # only first hypothesis is to be rejected
     𝐱=membership(AnovaF_IS(), ns)
     print("1-way independent samples ANOVA test : "); 
     @test findall(p->p<=0.05, _permMcTest!(copy(𝐱), 𝐘, ns, AnovaF_IS(), AnovaF_IS(); verbose=false).p)==[1] ;  println(" ✔, ")
     _permMcTest!(copy(𝐱), 𝐘, ns, AnovaF_IS(), AnovaF_IS(); switch2rand=1, nperm=5000, seed=0, verbose=false); # run approximate test
 
     # T-tests (independent samples)
-    ns=[4, 6] # use even numbers
+    ns=[8, 8] # use even numbers
     n=sum(ns)
     isodd(n) && throw(ArgumentError("test_multicompTests(): 1-way independent samples ANOVA test, n must be even"))
-    𝐘=[collect(Base.OneTo(n)).*1.0, rand(n), rand(n)] # only first hypothesis is to be rejected
+    𝐘=[collect(Base.OneTo(n)).*1.0, [100. for i=1:n].+randn(n), [100. for i=1:n].+randn(n)] # only first hypothesis is to be rejected
     𝐱=membership(StudentT_IS(), ns)
     println("t-test independent samples test : "); 
     @test findall(p->p<=0.05, _permMcTest!(copy(𝐱), 𝐘, ns, StudentT_IS(), StudentT_IS(); verbose=false).p)==[1] ;  print(" bi-directional ✔, ")
@@ -462,18 +463,18 @@ function test_multcompTests_API(; tol=1e-1)
     # Instead the r-max test rejectes them both at the 0.05 level at the first step.
 
     # 1-Way ANOVA for independent samples 
-    ns=[4, 2, 6] # use even numbers here
+    ns=[6, 6, 8] # use even numbers here
     n=sum(ns)
     isodd(n) && throw(ArgumentError("test_multicompTests(): 1-way independent samples ANOVA test, n must be even"))
-    𝐘=[collect(Base.OneTo(n)).*1.0, rand(n), rand(n)] # only first hypothesis is to be rejected
+    𝐘=[collect(Base.OneTo(n)).*1.0, [100. for i=1:n].+randn(n), [100. for i=1:n].+randn(n)] # only first hypothesis is to be rejected
     print("1-way independent samples ANOVA test : "); 
     @test findall(p->p<=0.05, fMcTestIS(𝐘, ns; verbose=false).p)==[1] ;  println(" ✔, ")
 
     # T-tests (independent samples)
-    ns=[4, 6] # use even numbers
+    ns=[8, 8] # use even numbers
     n=sum(ns)
     isodd(n) && throw(ArgumentError("test_multicompTests(): 1-way independent samples ANOVA test, n must be even"))
-    𝐘=[collect(Base.OneTo(n)).*1.0, rand(n), rand(n)] # only first hypothesis is to be rejected
+    𝐘=[collect(Base.OneTo(n)).*1.0, [100. for i=1:n].+randn(n), [100. for i=1:n].+randn(n)] # only first hypothesis is to be rejected
     println("t-test independent samples test : "); 
     @test findall(p->p<=0.05, tMcTestIS(𝐘, ns; verbose=false).p)==[1] ;  print("bi-directional ✔, ")
     @test isempty(findall(p->p<=0.05, tMcTestIS(𝐘, ns; direction=Right(), verbose=false).p)) ;  print(" right-directional ✔, ")

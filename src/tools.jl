@@ -22,6 +22,7 @@ membership      create the membership vector for Independent Samples ANOVA tests
 genPerms        generate systematic permutations
 table2vec       Convert a table to vectors to be used as input to test functions.
 flip            flip the sign for a Number and negate for a Bool
+testStatistic
 
   UTILITIES
 _fstat
@@ -44,8 +45,12 @@ flip(x::Union{R, I}) where {R<:Real, I<:Int}
 
 Invert the sign of a real number or integer and negate a boolean. 
 
-This function is be needed only to call [`_permTest!`](@ref) or [`_permMcTest!`](@ref) if you 
-[create your own test](@ref "Create your own test"). 
+This function may be needed for argument `fstat` to call [`_permTest!`](@ref) or [`_permMcTest!`](@ref) if you 
+[create your own test](@ref "Create your own test") - see the example on how to create a test
+for the [Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation").
+
+It can also be useful when you create a new test in the code you deveolop for computing your own test statistics. 
+
 """
 flip(x::Bool) = !x
 
@@ -400,7 +405,7 @@ Generate a *lazy* iterator over all possible (systematic) permutations according
 to be used for test statistic `stat`, which is given as a singleton of type [Statistic](@ref).
 
 Note that data permutation in *PermutationsTests.jl* are always obtained by lazy iterators, that is, permutations are never
-listed physically. This is the main reason why the package is fast.
+listed physically. This is one of the main reasons why the package is fast and allocates little memory.
 
 You do not need these functions for general usage of the package, however you need to know them 
 if you wish to [create your own test](@ref "Create your own test"). 
@@ -519,19 +524,20 @@ genPerms(stat::OneSampStatistic, 𝐱::UniData, ns::Int, direction::TestDir,
 
 # ----- #
 # check the `ns` argument, which is given as input for several test functions
+# second check only for internal test to allow new test creations that have a fifferent 𝐲
 function _check_ns(𝐲, ns, stat::Union{BivStatistic, OneSampStatistic}) 
     ns isa Int || throw(ArgumentError(📌*" Function _check_ns: for bivariate and OneSampStatistic statistics `ns` must be an integer"))
-    ns≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for bivariate and OneSampStatistic statistics `ns` must be an integer equal to the length of 𝐲"))
+    𝐲 isa DataType && ns≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for bivariate and OneSampStatistic statistics `ns` must be an integer equal to the length of 𝐲"))
 end
 
 function _check_ns(𝐲, ns, stat::IndSampStatistic) 
     ns isa IntVec || throw(ArgumentError(📌*" Function _check_ns: for Independent Samples statistics `ns` must be a vector of integer"))
-    sum(ns)≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for Independent Samples statistics the elements in `ns` must sum up to the length of vector argument 𝐲"))
+    𝐲 isa DataType && sum(ns)≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for Independent Samples statistics the elements in `ns` must sum up to the length of vector argument 𝐲"))
 end
 
 function _check_ns(𝐲, ns, stat::RepMeasStatistic) 
     ns isa NamedTuple || throw(ArgumentError(📌*" Function _check_ns: for Repeated Measure statistics `ns` must be a NamedTuple"))
-    ns.n*ns.k≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for Repeated Measure statistics the `k`(# of treatments) and `n`(# of subjects) fields in `ns` must sum up to the length of vector argument 𝐲"))
+    𝐲 isa DataType && ns.n*ns.k≠length(𝐲) && throw(ArgumentError(📌*" Function _check_ns: for Repeated Measure statistics the `k`(# of treatments) and `n`(# of subjects) fields in `ns` must sum up to the length of vector argument 𝐲"))
 end
 # ----- #
 
@@ -566,7 +572,7 @@ end
 
 # ----- #
 # make checks and prepare the ensuing _perm_test! function
-function _prepare_permtest!(𝐱, 𝐲::UniData, ns, stat, fstat, nperm, switch2rand, seed, standardized, centered)#, means, sds)
+function _prepare_permtest!(𝐱, 𝐲, ns, stat, fstat, nperm, switch2rand, seed, standardized, centered)#, means, sds)
 
     # check ns argument 
     _check_ns(𝐲, ns, stat)
@@ -576,7 +582,8 @@ function _prepare_permtest!(𝐱, 𝐲::UniData, ns, stat, fstat, nperm, switch2
     testtype, nperm, direction, design  = _test_params(stat, ns, fstat, length(𝐲), nperm, switch2rand)
 
     # for OneSampStatistic and approximate tests 𝐱 is not used. For all other cases 𝐱 and 𝐲 must have equal length)
-    !((stat isa OneSampStatistic) & (testtype == :approximate)) && length(𝐱) ≠ length(𝐲) && throw(ArgumentError(📌*"Function _prepare_permtest!: the length of vector argument 𝐱 and 𝐲 is not equal"))
+    # 𝐲 isa DataType in order to allow to create tests with different data types
+    𝐲 isa DataType && !((stat isa OneSampStatistic) & (testtype == :approximate)) && length(𝐱) ≠ length(𝐲) && throw(ArgumentError(📌*"Function _prepare_permtest!: the length of vector argument 𝐱 and 𝐲 is not equal"))
   
     rng = nothing
     testtype == :approximate && (rng = MersenneTwister(seed==0 ? rand(UInt32) : seed))
@@ -587,9 +594,9 @@ function _prepare_permtest!(𝐱, 𝐲::UniData, ns, stat, fstat, nperm, switch2
     getkwargs(𝐱, 𝐲, ns, stat::PearsonR)     = (k=0, ns=0, standardized=standardized, centered=centered)#, means=means, sds=sds)
     getkwargs(𝐱, 𝐲, ns, stat::IndSampStatistic) = (_anova_IS_fixed_params(𝐱; askwargs=true)..., ft=0) # ft is dummy, but otherwise does not compile
     getkwargs(𝐱, 𝐲, ns, stat::Union{RepMeasStatistic, OneSampStatistic}) = (k=0, ns=ns)
-    kwargs = getkwargs(𝐱, 𝐲, ns, stat)
+    mykwargs = getkwargs(𝐱, 𝐲, ns, stat)
     
-    return testtype, nperm, direction, design, kwargs, rng
+    return testtype, nperm, direction, design, mykwargs, rng
 end
 
 

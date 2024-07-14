@@ -22,6 +22,13 @@ They are used when a single null hypothesis is to be tested. The following tests
 | One-sample Student's t | [`studentTest1S`](@ref) | `tTest1S` |
 | Sign | [`signTest`](@ref) |  |
 
+You may also find useful the tests we have created as examples of how to create new tests:
+
+| Test | 
+|:----------|
+| [Autocorrelation](@ref "Example 1: univariate autocorrelation test") |
+| [Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
+
 ---
 
 

@@ -13,10 +13,11 @@ https://sites.google.com/site/marcocongedo/home
 =============================
   EXPORTED:
 - _permTest! - ultimate function to perform all univariate tests 
+- testStatistic - compute observed and permuted test statistic for univariate tests 
 
   UTILITIES:
-- _randperm!   - generate a random permutattion overwriting either the 𝐱 or 𝐲 vector
-- _additional_kwargs! - additional keyword arguments for _permTest! depending on the statistic
+- _randperm_uni!   - generate a random permutattion overwriting either the 𝐱 or 𝐲 vector
+- _additional_kwargs_uni! - additional keyword arguments for _permTest! depending on the statistic
 =#
 
 
@@ -26,18 +27,18 @@ https://sites.google.com/site/marcocongedo/home
 # For RepMeasStatistic statistics this is a suffling of all elements of 𝐱 taken k at a time. ns is needed 
 # For OneSampStatistic statistics, the sign of the elements in 𝐲 is flipped with probability 0.5. ns is ignored 
 #   Note that instead for exact test only the 𝐱 vector is changed
-_randperm!(𝐱::UniData, 𝐲::UniData, stat::Union{BivStatistic, IndSampStatistic}, rng::MersenneTwister; ns::nsType = 0, ft = nothing) = 
-    (shuffle!(rng, 𝐱), 𝐲)
+_randperm_uni!(𝐱::UniData, 𝐲, stat::Union{BivStatistic, IndSampStatistic}, rng::MersenneTwister; ns::nsType = 0, ft = nothing) =
+    return (shuffle!(rng, 𝐱), 𝐲)
 
-function _randperm!(𝐱::UniData, 𝐲::UniData, stat::RepMeasStatistic, rng::MersenneTwister; ns = @NamedTuple{n::Int, k::Int}, ft = nothing) 
+
+function _randperm_uni!(𝐱::UniData, 𝐲, stat::RepMeasStatistic, rng::MersenneTwister; ns = @NamedTuple{n::Int, k::Int}, ft = nothing) 
     @simd for i=0:ns.n-1 
         @inbounds shuffle!(rng, view(𝐱, (i*ns.k)+1:(i*ns.k)+ns.k)) # shuffling in-place of 𝐱
     end
     return (𝐱, 𝐲)
 end
 
-
-function _randperm!(𝐱::UniData, 𝐲::UniData, stat::OneSampStatistic, rng::MersenneTwister; ns::nsType = 0, ft::Tuple=(-1.0, 1.0)) 
+function _randperm_uni!(𝐱::UniData, 𝐲, stat::OneSampStatistic, rng::MersenneTwister; ns::nsType = 0, ft::Tuple=(-1.0, 1.0)) 
     @simd for i ∈ eachindex(𝐲) 
         @inbounds 𝐲[i] *= rand(rng, ft) # flip the sign of the elements of 𝐲 with probability 0.5 (rand pick a number at random from `ft`)
     end
@@ -47,14 +48,21 @@ end
 
 
 # Add some keyword arguments to kwargs for some statistics.
-# This is the only part of the preparation that is different in univariate and multivariate/multiple comparison tests 
 # ----- #
-function _additional_kwargs!(kwargs, 𝐲::UniData, ns, stat, cpcd)
+function _additional_kwargs_uni!(kwargs, 𝐲, ns, stat, cpcd)
     stat isa AnovaF_RM && (kwargs = (kwargs..., ∑Y²kn=_∑Y²kn(𝐲, ns), ∑y²=_∑y²(𝐲), ∑S²k=_∑S²k(𝐲, ns)))
     stat isa StudentT_1S && (kwargs = (kwargs..., ∑y²=∑of²(𝐲)))
     cpcd === nothing || (kwargs = (kwargs..., cpcd=cpcd))
     return kwargs
 end
+# ----- #
+
+
+# Compute observed and permuted statistics. Use an alias of `statistic` to allow a consistent
+# sintax when creating custom univariate and multiple comparison tests
+# ----- #
+testStatistic(𝐱, 𝐲::UniData, stat::AllStatistics; kwargs...) = 
+    statistic(𝐱, 𝐲, stat; kwargs...)
 # ----- #
 
 
@@ -70,7 +78,8 @@ function _permTest!(x, y, ns::nsType, stat::Stat, asStat::AsStat;
                     switch2rand::Int = Int(1e8),
                     seed::Int = 1234,
                     verbose::Bool = true,
-                    cpcd = nothing) where {Stat<:Statistic, AsStat<:Statistic}
+                    cpcd = nothing,
+                    kwargs...) where {Stat<:Statistic, AsStat<:Statistic}
 ```
 
 This function ultimately performs all **univariate permutation tests** implemented in *PermutationsTests.jl*, 
@@ -88,7 +97,7 @@ to be used as argument of a function implemented by the user
 to compute both the observed and permuted test statistics, see [create your own test](@ref "Create your own test").
 
 `asStat` is a singleton of the [Statistic](@ref) type. It is used to determine the permutation scheme 
-and for this purpose it will be passed to [`genPerms`](@ref) and [`nrPerms`](@ref).
+and for this purpose it will be internally passed to [`genPerms`](@ref) and [`nrPerms`](@ref).
 
 `asStat` determines also the input data format if you declare your own `stat` type. In this case
 the function you write for computing the observed and permuted test statistic will take the `x` and 
@@ -100,6 +109,10 @@ For `Stat` belonging to [group](@ref "Statistic groups")
  - `IndSampStatistic` : we have ``K`` groups and ``N=N_1+...+N_K`` total observations; `y` holds all observations in a single vector such as `[y1;...;yK]` and `x` is the [`membership(::IndSampStatistic)`](@ref) vector. For example, for ``K=2``, ``N_1=2`` and ``N_2=3``, `x=[1, 1, 2, 2, 2]`.
  - `RepMeasStatistic` : we have ``K`` measures (*e.g.*, treatements) and ``N`` subjects; `y` holds the  ``K*N`` observations in a single vector such as `[y1;...;yN]`, where each vector ``y_i``, for ``i=1...N``, holds the observation at the ``K`` treatments and `x=collect(1:K*N)` (see [`membership(::RepMeasStatistic)`](@ref)).
  - `OneSampStatistic` : We have ``N`` observations (*e.g.*, subjects); `y` holds the ``N`` observations and `x=ones(Int, N)` (see [`membership(::OneSampStatistic)`](@ref)).
+
+!!! note "Nota Bene"
+    In all cases `x` is treated as the permutation vector that will be permuted before calling the [`testStatistic`](@ref)
+    function.
 
 For `length(x)>30` the approximate test is performed in all cases, 
 
@@ -122,17 +135,17 @@ see for example [`correlationTest`](@ref).
 To use a random seed, pass `seed=0`. For `seed` any natural number, the test will be reproducible.
 
 `fstat` is a function applied to the test statistic. By default this is the julia `abs` function, 
-which takes the absolute value, hence yieds a bi-directional test. 
-For a right-directional test pass here `identity`. 
-For a left-directional test pass here [`flip`](@ref).
+which takes the absolute value, hence yieds a bi-directional test for a test statistic distributed symmetrically
+around zero. For a right-directional test using such test statistics pass here `identity`. 
+For a left-directional using such test statistics pass here [`flip`](@ref).
 
 `compfunc` is the function to compare the observed statistics to the permuted statistics. 
-The default function is `>=`. Don't change it.
+The default function is `>=`. Don't change it unless you have studied the code of the function.
 
 If `verbose` is true, print some information in the REPL while running the test. 
 Set to false if you run benchmarks. The default is true.
 
-For the `cpcd` argument, see [create you own test](@ref "Create your own test").
+For the `cpcd` and `kwargs...` argument, see [create you own test](@ref "Create your own test").
 
 Return a [UniTest](@ref) structure.
 
@@ -171,20 +184,21 @@ function _permTest!(𝐱, 𝐲, ns::nsType, stat::Stat, asStat::AsStat;
                     switch2rand::Int = Int(1e8),
                     seed::Int = 1234,
                     verbose::Bool = true,
-                    cpcd = nothing) where {Stat<:Statistic, AsStat<:Statistic}
+                    cpcd = nothing,
+                    kwargs...) where {Stat<:Statistic, AsStat<:Statistic}
 
     # check arguments and prepare test
-    testtype, nperm, direction, design, kwargs, rng = _prepare_permtest!(𝐱, 𝐲, ns, asStat, fstat, nperm, switch2rand, seed, standardized, centered)#, means, sds)      
-    kwargs = _additional_kwargs!(kwargs, 𝐲, ns, asStat, cpcd) # more kwargs for some test statistics
+    testtype, nperm, direction, design, mykwargs, rng = _prepare_permtest!(𝐱, 𝐲, ns, asStat, fstat, nperm, switch2rand, seed, standardized, centered)#, means, sds)      
 
-    c, f, s, r! = compfunc, fstat, statistic, _randperm! # aliases
+    c, f, s, r! = compfunc, fstat, testStatistic, _randperm_uni! # aliases
 
     ####################### START TEST ##############################
 
     verbose && println("Performing a test using ", testtype == :exact ? "$nperm systematic permutations..." : "$nperm random permutations...")
 
     # observed statistic. eps is to avoid floating point arithmetic errors when comparing the permuted stats
-    obsStat=fstat(statistic(𝐱, 𝐲, stat; kwargs...)) - sqrt(eps()) 
+    mykwargs = _additional_kwargs_uni!(mykwargs, 𝐲, ns, stat, cpcd) # more kwargs for some test statistics
+    obsStat = f(testStatistic(𝐱, 𝐲, stat; mykwargs..., kwargs...)) - sqrt(eps()) 
 
     # get p-value
     #############
@@ -201,11 +215,11 @@ function _permTest!(𝐱, 𝐲, ns::nsType, stat::Stat, asStat::AsStat;
         # check to be removed later on
         #nperm ≠ length(P) && throw(ArgumentError("nperm is not equal to the length of P, $nperm, $(length(P))"))
 
-        pvalue = sum(c(f(s(p, 𝐲, stat; kwargs...)), obsStat) for p ∈ P) / nperm
+        pvalue = sum(c(f(s(p, 𝐲, stat; mykwargs..., kwargs...)), obsStat) for p ∈ P) / nperm
 
     else    # Monte Carlo test
         # N.B. r! return 𝐱_, 𝐲_, one of which is modified depending on stat to generate a random data permutation 
-        pvalue = (1+sum(c(f(s(r!(𝐱, 𝐲, asStat, rng; ns)..., stat; kwargs...)), obsStat) for i ∈ 1:nperm-1)) / nperm  
+        pvalue = (1+sum(c(f(s(r!(𝐱, 𝐲, asStat, rng; ns)..., stat; mykwargs..., kwargs...)), obsStat) for i ∈ 1:nperm-1)) / nperm  
     end
     #############
 

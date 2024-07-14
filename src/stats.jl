@@ -670,32 +670,18 @@ end
 # ∑ of al observations, squared and dividen by k*n. For computing 1-way Rep Meas ANOVA F statistic
 _∑Y²kn(𝐲, ns) = abs2(sum(𝐲))/(ns.k*ns.n)
 
-"""
-```julia
-function _∑Y²(y)
-```
+# Pre-compute some data for the [`statistic`](@ref) methods computing the `StudentT_1S` test-statistic
+# and the `AnovaF_RM` test-statistic.
+# Return the sum of all squared observations in `y`. 
 
-Pre-compute some data for the [`statistic`](@ref) methods computing the `StudentT_1S` test-statistic
-and the `AnovaF_RM` test-statistic.
-
-Return the sum of all squared observations in `y`. 
-
-"""
 _∑y²(𝐲) = ∑of²(𝐲) 
 
 # sum of subject totals; squared and divided by n. For computing 1-way Rep Meas ANOVA F statistic
 _∑S²k(𝐲, ns) = sum(abs2(sum(view(𝐲[i:i+ns.k-1], :)))/ns.k for i=1:ns.k:ns.n*ns.k)  
 
 # The three above in one pass as a vector
-"""
-```julia
-function _∑Y²kn_∑y²_∑S²k(y, ns)
-```
-
-Pre-compute some data for the [`statistic`](@ref) computing the `AnovaF_RM` test-statistic.
-
-Return a 3-tuple.
-"""
+# Pre-compute some data for the [`statistic`](@ref) computing the `AnovaF_RM` test-statistic.
+# Return a vector of three elements [_∑Y²kn, `_∑y²`, `_∑S²k`].
 _∑Y²kn_∑y²_∑S²k(𝐲, ns) = [abs2(sum(𝐲))/(ns.k*ns.n), ∑of²(𝐲), sum(abs2(sum(view(𝐲[i:i+ns.k-1], :)))/ns.k for i=1:ns.k:ns.n*ns.k)]
 
 
@@ -720,7 +706,7 @@ the ``K`` tratments for observation ``N``. Thus, `y` holds ``N \\cdot K`` elemen
 with form `(n=N, k=K)` (see examples below).
 
 `∑Y²kn`, `∑y²` and `∑S²k` can be optionally provided to speed up computations since these quantities are
-invariant by data permutations. The function [`_∑Y²kn_∑y²_∑S²k`](@ref) can be used for this purpose, 
+invariant by data permutations. The exported function `_∑Y²kn_∑y²_∑S²k` can be used for this purpose, 
 see the examples below. 
 
 *Examples*
@@ -828,7 +814,7 @@ Student's one-sample *t* statistic.
 `x` is a tuple holding as many 1.0 as elements in `y`.
 
 `∑y²` can be optionally provided to speed up computations, since this quantity is
-invariant by data permutations. The function [`_∑y²`](@ref) can be used for this purpose, 
+invariant by data permutations. The exported function `_∑y²` can be used for this purpose, 
 see the examples below. 
 
 *Examples*
@@ -861,7 +847,7 @@ Student's one-sample *t* statistic.
 `x` is the [`membership(::OneSampStatistic)`](@ref) vector.
 
 `∑y²` can be optionally provided to speed up computations since this quantity is
-invariant by data permutations. The function [`_∑y²`](@ref) can be used for this purpose, 
+invariant by data permutations. The exported function `_∑y²` can be used for this purpose, 
 see the examples below. 
 
 *Examples*

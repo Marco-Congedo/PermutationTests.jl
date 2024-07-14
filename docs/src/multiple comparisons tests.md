@@ -24,6 +24,13 @@ control the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family-wise_
 | One-sample Student's t | [`studentMcTest1S`](@ref) | `tMcTest1S` |
 | Sign test | [`signMcTest`](@ref) |  |
 
+You may also find useful the tests we have created as examples of how to create new tests:
+
+| Test | 
+|:----------|
+| [Autocorrelation](@ref "Example 2: multiple comparison autocorrelation test") |
+| [Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
+
 ---
 
 For creating other tests, see [Create your own test](@ref).
