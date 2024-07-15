@@ -648,32 +648,6 @@ function dm(x, n; pnorm=2)
     return D
 end    
 
-
-# x and y are vectors holding n realizations of (real or complex) scalars, vectors, 
-# matrices... The elements in y must not have the same dimension as those in x, 
-# however x and y must hold the same number of elements.
-# Return H*Dx*H' and H*Dy*H', 
-# H is the centering matrices and Dx and Dy are the 
-# distance matrices for x and y according to norm `pnorm`. 
-function getDistances(x, y; pnorm=2)
-    n = length(x)
-    H = Matrix{Float64}(I, n, n) - fill(1/n, n, n)
-    Hm = LinearAlgebra.Hermitian
-    return H * Hm(dm(x, n; pnorm)) * H', H * Hm(dm(y, n; pnorm)) * H'
-end
-
-# As `getDistances`, but here Y is a k-vector of vectors of realizations,
-# thus, return H*Dx*H' and H*Dy1*H',...,H'*Dyk*H', 
-# In addition to the restrictions of `getDistances`, the k vectors of Y must
-# contain elements of the same size.
-function getMDistances(x, Y; pnorm=2)
-    # Centering matrices
-    n = length(x)
-    H = Matrix{Float64}(I, n, n) - fill(1/n, n, n)
-    Hm = LinearAlgebra.Hermitian
-    return H * Hm(dm(x, n; pnorm)) * H', [H * Hm(dm(y, n; pnorm)) * H' for y ∈ Y]
-end
-
 # Distance variance. Eq. (2.9) in Székemy, Rizzo and Bakirov(2007). 
 # D is a distance matrix
 dVar(D) = sum(x->abs2(x), D)/size(D, 1)^2  
@@ -739,13 +713,15 @@ compute the distance correlation. The quantities that are invariant by permutati
 are passed to the function so that we do not need to recompute them.
 
 ```julia
-function testStatistic(p, Dy, stat::Dcor; H, P, Dx, dVarDy, kwargs...)
-   permMatrix!(P, p)
+function testStatistic(x, HDyH, stat::Dcor; H, P, Dx, dVarHDyH, kwargs...)
+   permMatrix!(P, x)
    # Hx * P * Dx * P' * Hx', Dx with rows and columns permuted
-   HxPDxPHx = H * (P * Dx * P') * H' 
-   den = dVar(HxPDxPHx) * dVarDy # square of the denominator of dCor 
-   return den > 0 ? sqrt(dCov(HxPDxPHx, Dy)/sqrt(den)) : 0. # dCor
+   HP = H*P
+   HxPDxPHx = HP * Dx * HP' # permuted and double centered Dx
+   den = dVar(HxPDxPHx) * dVarHDyH # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
+   return den > 0 ? sqrt(dCov(HxPDxPHx, HDyH)/sqrt(den)) : 0. # dCor
 end
+
 ```
 Finally, we write a function preparing the data and calling the [`_permTest!`](@ref) function.
 The preparation involves computing the distance matrices (once and for all),
@@ -759,19 +735,22 @@ the vector with the indices in the natural order ``1...n``.
 ```julia
 # The test takes as input two vectors of elements, which may be scalars, vectors or matrices.
 function dCorPermTest(x, y; pnorm=2, kwargs...)
-   Dx, Dy = getDistances(x, y; pnorm) 
-   n = size(Dx, 1)
-   size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square"))
-   size(Dx) == size(Dy) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
-   p = collect(Base.OneTo(n)) # permutation vector
+    n = length(x)
+    Dx = Hermitian(dm(x, n; pnorm)) 
+    Dy = Hermitian(dm(y, n; pnorm)) 
    
-   #  the centering matrix, the identity matrix, Dx, dVar(Dy)
-   Id = Matrix{Float64}(I, n, n)
-   H = Id - fill(1/n, n, n) # the centering matrix
-   P = copy(Id) # the permutation matrix
-   dVarDy = dVar(Dy) # the distance variace of Dy (invariant to permutations)
+    size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square"))
+    size(Dx) == size(Dy) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
+    p = collect(Base.OneTo(n)) # permutation vector
+   
+    #  the centering matrix, the identity matrix, HDyH, dVar(HDyH)
+    Id = Matrix{Float64}(I, n, n)
+    H = Id - fill(1/n, n, n) # the centering matrix
+    P = copy(Id) # the permutation matrix
+    HDyH = H * Dy * H'
+    dVarHDyH = dVar(HDyH) # the distance variace of HDyH (invariant to permutations)
 
-   return _permTest!(p, Dy, n, Dcor(), PearsonR(); fstat=identity, H, P, Dx, dVarDy, kwargs...)
+    return _permTest!(p, HDyH, n, Dcor(), PearsonR(); fstat=identity, H, P, Dx, dVarHDyH, kwargs...)
 end
 ```
 
@@ -815,44 +794,44 @@ Note also
 
 
 ```julia
-function testStatistic(x, DY, m::Int, stat::Dcor; H=H, P=P, Dx, dVarDY, HPDxPH, dVarDx, kwargs...)
+function testStatistic(x, HDYH, m::Int, stat::Dcor; H=H, P=P, Dx, dVarHDYH, HxPDxPHx, dVarHDxH, kwargs...)
     if m==1
         permMatrix!(P, x)
         # Hx * P * Dx * P' * Hx', Dx with rows and columns permuted 
         HP = H * P
-        HPDxPH[:] = HP * Dx * HP'  # notice the [:] syntax; this kwarg is updated when m=1
-        dVarDx[:] = [dVar(HPDxPH)] # notice the [:] syntax; this kwarg is updated when m=1
+        HxPDxPHx[:] = HP * Dx * HP'  # notice the [:] syntax; this kwarg is updated when m=1
+        dVarHDxH[:] = [dVar(HxPDxPHx)] # notice the [:] syntax; this kwarg is updated when m=1
     end
     
-    den = dVarDx[1] * dVarDY[m] # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
-    return den > 0 ? sqrt(dCov(HPDxPH, DY[m])/sqrt(den)) : 0. # dCor
- end
+    den = dVarHDxH[1] * dVarHDYH[m] # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
+    return den > 0 ? sqrt(dCov(HxPDxPHx, HDYH[m])/sqrt(den)) : 0. # dCor
+end
  
 
 function dCorPermMTest(x, Y; pnorm=2, kwargs...)
-    Dx, DY = getMDistances(x, Y; pnorm) 
-
-    # checks
+    n = length(x)
+    Dx = Hermitian(dm(x, n; pnorm)) 
+    DY = [Hermitian(dm(y, n; pnorm)) for y ∈ Y] 
     size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermMTest: The `Dx` and `Dy` distance matrices that have been computed are not square"))
     size(Dx) == size(DY[1]) || throw(ArgumentError("Function dCorPermMTest: The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
     length(unique(size.(DY, 1))) == 1 || throw(ArgumentError("Function dCorPermMTest: All elements of second data input must have equal size"))
-    
     n = size(Dx, 1)
     p = collect(Base.OneTo(n)) # permutation vector
-    Id = Matrix{Float64}(I, n, n)
 
     # keyword arguments that are not updated
+    Id = Matrix{Float64}(I, n, n)
     H = Id - fill(1/n, n, n)
-    dVarDY = [dVar(Dy) for Dy ∈ DY]
+    P = copy(Id) 
+    HDYH = [H*Dy*H' for Dy ∈ DY]
+    dVarHDYH = dVar.(HDYH)
 
     # Initialize keyword arguments that will be updated
-    HPDxPH = Matrix{Float64}(undef, size(Dx)...)
-    dVarDx = [0.0] # NB, cannot pass a scalar as kwarg if it is to be updated!
-    P = copy(Id) # The first permutation must correspond to 'no permutation'
+    HxPDxPHx = Matrix{Float64}(undef, size(Dx)...)
+    dVarHDxH = [0.0] # NB, cannot pass a scalar as kwargs if it is to be updated!
 
-    return _permMcTest!(p, DY, n, Dcor(), PearsonR(); 
-                        fstat=identity, threaded=false, H, P, Dx, dVarDY, HPDxPH, dVarDx, kwargs...)
- end
+    return _permMcTest!(p, HDYH, n, Dcor(), PearsonR(); 
+                        fstat=identity, threaded=false, H, P, Dx, dVarHDYH, HxPDxPHx, dVarHDxH, kwargs...)
+end
 
 ```
 ---
