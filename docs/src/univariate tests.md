@@ -28,6 +28,7 @@ You may also find useful the tests we have created as examples of how to create 
 |:----------|
 | [Autocorrelation](@ref "Example 1: univariate autocorrelation test") |
 | [Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
+| [Distance correlation](@ref "Example 7: univariate distance correlation") |
 
 ---
 

@@ -134,13 +134,7 @@ Here is the list of available tests:
 | Sign*|
 |                * for dicothomous data |
 
-You may also find useful the tests we have created as examples of how to create new tests:
-
-| Univariate and Multiple Comparisons Permutation Tests | 
-|:----------|
-| [Autocorrelation](@ref "Example 1: univariate autocorrelation test") |
-| [Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
-
+You may also find useful the tests we have created as [examples](@ref "Index of examples") of how to create new tests.
 
 When the number of permutations is high, *PermutationTests.jl* computes approximate (Monte Carlo) p-values. All test functions switches automatically from systematic to Monte Carlo permutations, but the user can force them to use either one permutation listing procedure.
 

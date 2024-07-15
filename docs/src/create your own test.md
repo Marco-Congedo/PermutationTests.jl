@@ -12,6 +12,22 @@ There are two ways you can extend the capability of *PermutationTests.jl*.
 
  - The second, which needs a little development, but is much more general, allows you to create new tests defining your own test statistics.
 
+The illustration proceeds by examples of increasing complexity.
+
+## Index of examples
+
+| Serial | Examples | 
+|:----------:|:----------|
+| 1 | [Univariate autocorrelation test](@ref "Example 1: univariate autocorrelation test") |
+| 2 | [Multiple comparison autocorrelation test](@ref "Example 2: multiple comparison autocorrelation test") |
+| 3 | [Univariate t-test for independent samples](@ref "Example 3: univariate t-test for independent samples") |
+| 4 | [Multiple comparison correlation test](@ref "Example 4: multiple comparison correlation test") |
+| 5 | [Univariate Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
+| 6 | [Multiple comparisons Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
+| 7 | [Univariate distance correlation](@ref "Example 7: univariate distance correlation") |
+| 8 | [Multiple comparison distance correlation](@ref "Example 8: multiple comparison distance correlation") |
+
+
 ## Using existing tests
 
 The approach for constructing univariate and multiple comparisons tests is illustrated by creating tests for the **autocorrelation**, which are not in the API of the package.
@@ -408,15 +424,15 @@ of tests already implemented in the API of *PermutationTests.jl*. Creating genui
 is not necesserely more complicated thought, as it is shown in this example.
 
 The Chatterjee (2021) correlation ``ξ_{x→y}`` is an asymmetric, asymptotycally consistent 
-estimator of how much a random variable ``y`` is a measurable function of ``x``. TThus,
-we can use to set a null hypothesis of the form 
+estimator of how much a random variable ``y`` is a measurable function of ``x``. Thus,
+we can use it to test a null hypothesis of the form 
 
 ``H_0: y≠f(x)``. 
 
-The function f must not have to be monotonic, nor linear.
+The function ``f`` does not have to be monotonic, nor linear.
 In the following, ``x`` and ``y`` are assumed continuous with no ties.
 
-Let ``r`` be the ranks of variable ``y`` computed after this has been sorted by ascending 
+Let ``r`` be the ranks of variable ``y`` computed after sorting ``y`` by ascending 
 order of ``x``. The coefficient is given by
 
 ``ξ_{x→y}= 1-\frac{3δ_{x→y}(r)}{n²-1}``, 
@@ -428,7 +444,7 @@ where
 ``ξ_{x→y}`` takes value in interval ``[0, 1]`` asymptotically. The limits with finite sampling
 are ``[-1/2+O(1/n), (n-2)/(n+1)]``. 
 
-``ξ`` has a simple asymptotic Gaussian distribution given by ``√n*ξ~N(0, 2/5)``
+``ξ`` has a simple asymptotic Gaussian distribution given by ``√n*ξ \sim N(0, 2/5)``
 and is computed in ``O(n\textrm{log}n)``.
 
 **Reference**: S. Chatterjee (2021) a new coefficient of correlation, journal of the american statistical association 
@@ -436,10 +452,7 @@ and is computed in ``O(n\textrm{log}n)``.
 
 ---
 
-Let us now construct permutation tests for ``ξ_{x→y}``, the multiple comparisons version of which will allow us
-to test ``M`` hypotheses simultaneously while controlling the family-wise error.
-
-The following code block defines a function to obtain the univariate permutation test:
+Let us now construct a univariate permutation tests for ``ξ_{x→y}``. The following code block defines a function to create it:
 
 ```julia
 using PermutationTests
@@ -455,14 +468,12 @@ xiCorPermTest(x, y; kwargs...) =
                 fstat = flip, kwargs...)
 
 ```
-
-As in [example 3](@ref "Example 3: univariate t-test for independent samples"), we import `testStatistic` and we define a type for the test statistic of interest as a 
-type of `Statistic`, which we have named `Chatterjeeξ`. Notice that we use ``δ_{x→y}(r)`` as an 
+As in [example 3](@ref "Example 3: univariate t-test for independent samples"), we import `testStatistic` and we define a type for the test statistic of interest as a [`Statistic`](@ref) type, which we have named `Chatterjeeξ`. Notice that we use ``δ_{x→y}(r)`` as an 
 equivalent test statistic for ``ξ_{x→y}``. Notice also that while this is possible because
 ``δ_{x→y}(r)`` and ``ξ_{x→y}`` are a monotonic function of each other, their relationship is
 inverted, which will be taken care of later.
 
-Then we declare a `testStatistic` method for the ``δ_{x→y}(r)`` quantity defined above.
+Then, we declare a [`testStatistic`](@ref) method for computing the ``δ_{x→y}(r)`` quantity defined above for the observed and permuted data.
 
 Finally, we invoke the [`_permTest!`](@ref) function. 
 
@@ -496,11 +507,11 @@ t1 = xiCorPermTest(x, y) # y is a function of x with little noise
 
 ---
 
-Next, let us define the multivariate comparison permutation test for ``ξ_{x→y}``. We wish to test simultaneously
+Next, let us define the multiple comparisons permutation test for ``ξ_{x→y}``. We wish to test simultaneously
 
 ``H_0(m): y_m≠f(x), m=1...M``
 
-The code is:
+The code could be:
 
 ```julia
 using PermutationTests
@@ -554,7 +565,7 @@ t1 = xiCorPermMTest(x, Y) # y1,...ym are a function of x with little noise
 
 ### Example 7: univariate distance correlation
 
-This and next example illustrate how we can crete a test for a complex test-statistics,
+This and next example illustrate how we can crete a test for a complex test statistic,
 still avoiding redundant computations, as if we wrote the code for a permutation test
 from scratch.
 
@@ -564,11 +575,10 @@ linear and non-linear dependence. We will here limit ourselves to
 scalars, vectors and matrices, it does not matter if real or complex.
 
 Let ``{(X_k, Y_k): k=1...K}`` be ``K`` pairs of
-observations (may be scalars, vectors, matrices), of the same
-size within ``X`` and ``Y``, but of possible different 
-size between  ``X`` and ``Y``.
+observations (may be scalars, vectors, matrices). The elements within ``X`` and ``Y`` must have the same size, 
+but the size of the elements in ``X`` may be different from the size of those in ``Y``.
 
-Let ``D_x`` and ``D_y`` the distance matrices with elements
+Let ``D_x`` and ``D_y`` be the distance matrices with elements
 
 ``D_x^{(ij)}=\left| X_i - X_j \right|_p : i,j={1,...,K}``
 
@@ -576,7 +586,7 @@ and
 
 ``D_y^{(ij)}=\left| Y_i - Y_j \right|_p : i,j={1,...,K}``,
 
-where ``\left|\cdot\right|_p`` is the p-norm, with ``p∈(0, 2)``.
+where ``\left|\cdot\right|_p`` is the p-norm, with ``p∈(0, 2]``.
 
 Let 
 
@@ -607,10 +617,10 @@ Finally, the **distance correlation** is defined such as
 
 where by convention it takes value zero if the denominator is zero.
 
-**Reference**: : G.J. Székely, M.L. Rizzo, N.K. Bakirov (2007). Measuring and testing dependence by correlation of distances Ann. Statist. 35(6): 2769-2794.
+**Reference**: G.J. Székely, M.L. Rizzo, N.K. Bakirov (2007). Measuring and testing dependence by correlation of distances Ann. Statist. 35(6): 2769-2794.
 
 ---
-After the definition, let us see how we can create permutation tests
+After giving the definition, let us see how we can create a univariate permutation tests
 for the distance correlation.
 
 First, let us define some functions we will need.
@@ -681,7 +691,7 @@ end
 ```
 
 ---
-We are ready to create the univariate test.
+We are now ready to create the univariate test.
 
 First, let us import `testStatistic`:
 
@@ -691,8 +701,8 @@ import PermutationTests: testStatistic
 ```
 
 Given two vectors of elements `x` and `y` with distance matrices `Dx` and `Dy`, the test is 
-obtained permuting the indices of `x`. Instead of recomputing `Dx` at each permutation, 
-the strategy is to permute instead the rows and columns of distance matrix `Dx` by a permutation 
+obtained permuting the indices of `x`. Instead of recomputing distance matrix `Dx` at each permutation, 
+the strategy is to permute instead the rows and columns of `Dx` by a permutation 
 matrix `P` that is changed at each permutation according to the permutation vector `x`.
 
 Let us then write the function to do this:
@@ -715,7 +725,7 @@ struct Dcor <: Statistic end
 ```
 
 Next, as in the previous example, we need to define a method for `testStatistic`.
-This function takes aa arguments a permutation vector `p` and `Dy`, the distance
+This function takes as arguments a permutation vector `p` and `Dy`, the distance
 matrces of `y`, which is fixed across permutations.
 
 Furthermore, we will use four specially defined keyword arguments:
@@ -743,8 +753,8 @@ making some checks, creating the permutation vector `p` and the keyword argument
 that will be passed internally to the function `testStatistic` we have created by `_permTest!`.
 
 Importantly, the vector `p` is created so as to correspond to the permutation
-yielding the observed statistic (i.e., no data permutation), that is, in this case,
-the vector with the indices in the natural order ``1..n``.
+yielding the observed statistic (``i.e.``, no data permutation), that is, in this case,
+the vector with the indices in the natural order ``1...n``.
 
 ```julia
 # The test takes as input two vectors of elements, which may be scalars, vectors or matrices.
@@ -767,8 +777,8 @@ end
 
 We are done.
 
-Let us use the function. We make the example where the elements of `x` and `y` are vectors.
-You can verify yourself that the test works in the same way if they are scalar or matrices.
+Let us use the function. We make an example where the elements of `x` and `y` are vectors.
+You can verify yourself that the test works in the same way if they are scalars or matrices.
 
 ```julia
 # Vectors
@@ -787,7 +797,7 @@ perm = dCorPermTest(x, y; switch2rand=1)
 
 ### Example 8: multiple comparison distance correlation
 
-This example reuse the code we have already written for the previous
+This example reuses the code we have already written for the previous
 [example 7](@ref "Example 7: univariate distance correlation").
 
 The strategy here is the same as in that example, however here we have
@@ -801,7 +811,7 @@ is here below. As compared to the previous example, note that:
 
 Note also
 - the sytax `[:]` to update variables passed as keyword 
-- the fact that `dVarDx` is passed as a vector of one elements so as to be possible to update it thanks to the syntax `[:]`.
+- the fact that `dVarDx` is passed as a vector of one element so as to be possible to update it thanks to the syntax `[:]`.
 
 
 ```julia
@@ -847,9 +857,9 @@ function dCorPermMTest(x, Y; pnorm=2, kwargs...)
 ```
 ---
 
-Let us use the multiple comaparion test we have just created
+Let us use the multiple comaparions test we have just created.
 
-Example where `x` and `y` hold vectors:
+**Example where `x` and `y` hold vectors:**
 ```julia
 # Vectors
 n=10
@@ -870,7 +880,7 @@ perm = dCorPermMTest(x, Y)
 ```
 
 
-Example where `x` and `y` hold matrices:
+**Example where `x` and `y` hold matrices:**
 ```julia
 # Matrices
 n=10
@@ -890,13 +900,13 @@ end
 perm = dCorPermMTest(x, Y)
 
 ```
+---
 
-In conclusion, in this page we have illustrated how to create permutation tests of ascending complexity
-by means of several examples.
-The last two examples concerns tests that are pretty complex and not similar to any of the test
-implemented in *Permutationtests.jl*, demonstrating the flexibility of the package.
-The diverse procedures exposed here above can be adapted to new problems to
-create a countless number of permutation tests.
+In conclusion, in the above examples we have illustrated how to create permutation tests of increasing complexity.
+The last two examples concerns tests that are pretty complex and very different from any of the test
+implemented in *Permutationtests.jl*, where even the permutation scheme had to be defined differently.
+The diverse procedures exposed here above can be adapted to new problems in order to
+create a countless number of new permutation tests.
 
 ## Useful functions for creating your own tests
 

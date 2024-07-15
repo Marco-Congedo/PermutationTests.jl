@@ -30,6 +30,8 @@ You may also find useful the tests we have created as examples of how to create 
 |:----------|
 | [Autocorrelation](@ref "Example 2: multiple comparison autocorrelation test") |
 | [Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
+| [Distance correlation](@ref "Example 8: multiple comparison distance correlation") |
+
 
 ---
 
