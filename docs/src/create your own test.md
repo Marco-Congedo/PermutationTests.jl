@@ -789,8 +789,8 @@ is here below. As compared to the previous example, note that:
 - we are similarly also passing the distance variance of Dx `dVarDx` as a keyword argument for the same reason.
 
 Note also
-- the sytax `[:]` to update variables passed as keyword 
-- the fact that `dVarDx` is passed as a vector of one element so as to be possible to update it thanks to the syntax `[:]`.
+- the syntax `[:]` to update variables passed as keyword 
+- the fact that `dVarHDxH` is passed as a vector of one element so as to be possible to update it thanks to the syntax `[:]`.
 
 
 ```julia
