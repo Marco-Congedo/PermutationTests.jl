@@ -6,6 +6,8 @@
 
 A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical *hypothesis testing* based on *permutation theory*.
 
+Besides featuring an API with many tests, this package allows you to create your own permutation tests.
+
 ---
 ## Installation
 
