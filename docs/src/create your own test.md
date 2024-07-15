@@ -89,7 +89,7 @@ thus we can easily obtain exact or approximate tests with a specified number of 
 
 ---
 
-### Example 2: multiple comparison autocorrelation test
+### Example 2: multiple comparisons autocorrelation test
 
 With the same ease, we can test simultaneously the autocorrelation at several lags using the 
 multiple comparison version of the correlation test.
@@ -329,7 +329,7 @@ As an exercise, wrap the test we have created in a friendly function.
 ---
 
 
-### Example 4: multiple comparison correlation test
+### Example 4: multiple comparisons correlation test
 
 We create another version of the Pearson product-moment correlation test between a fixed variable given as a vector `x` and ``M`` variables given as a vector of ``M`` vectors `Y`. We want to test simultaneously 
 all correlations between `x` and `Y[m]`, for ``m=1...M``.
@@ -795,7 +795,7 @@ perm = dCorPermTest(x, y; switch2rand=1)
 
 ---
 
-### Example 8: multiple comparison distance correlation
+### Example 8: multiple comparisons distance correlation
 
 This example reuses the code we have already written for the previous
 [example 7](@ref "Example 7: univariate distance correlation").
