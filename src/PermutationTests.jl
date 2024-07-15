@@ -114,7 +114,7 @@ signMcTest!, signMcTest
 # Consts
 const titleFont     = "\x1b[38;5;208m" # orange
 const diceFont      = "\x1b[38;5;210m" # orange
-const separatorFont = "\x1b[38;5;223m" # orange clair
+const separatorFont = "\x1b[38;5;220m" # orange clair
 const defaultFont   = "\x1b[0m"
 const greyFont      = "\x1b[90m"
 const 📌            = titleFont*"PermutationTests.jl "*defaultFont
