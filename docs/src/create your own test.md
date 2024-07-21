@@ -19,13 +19,13 @@ The illustration proceeds by examples of increasing complexity.
 | Serial | Examples | 
 |:----------:|:----------|
 | 1 | [Univariate autocorrelation test](@ref "Example 1: univariate autocorrelation test") |
-| 2 | [Multiple comparison autocorrelation test](@ref "Example 2: multiple comparison autocorrelation test") |
+| 2 | [Post-hoc tests for 1-way repeated-measures ANOVA](@ref "Example 2: Post-hoc tests for 1-way repeated-measures ANOVA") |
 | 3 | [Univariate t-test for independent samples](@ref "Example 3: univariate t-test for independent samples") |
-| 4 | [Multiple comparison correlation test](@ref "Example 4: multiple comparison correlation test") |
+| 4 | [Multiple comparison correlation test](@ref "Example 4: multiple comparisons correlation test") |
 | 5 | [Univariate Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
 | 6 | [Multiple comparisons Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
 | 7 | [Univariate distance correlation](@ref "Example 7: univariate distance correlation") |
-| 8 | [Multiple comparison distance correlation](@ref "Example 8: multiple comparison distance correlation") |
+| 8 | [Multiple comparison distance correlation](@ref "Example 8: multiple comparisons distance correlation") |
 
 
 ## Using existing tests
@@ -87,56 +87,66 @@ By default the test is bi-directional, thus the above call is a test for the aut
 Our function `autocorTest` accepts all optional keyword arguments of the [`_permTest!`](@ref) function,
 thus we can easily obtain exact or approximate tests with a specified number of permutations, left- or right-directional tests, etc. 
 
+!!! warning "Nota Bene"
+    A multiple comparisons test for autocorrelation, that is, one testing for the autocorrelation at several lags simultaneously, cannot be done trivially by data permutation. See for example Romano and Tirlea (2022). For this reason such a test is not given as an example here below.
+    **Reference**: J.P. Romano, M.A. Tirlea (2022) Permutation testing for dependence in time series. Journal of Time Series Analysis, 43(5), 781-807.
+
 ---
 
-### Example 2: multiple comparison autocorrelation test
+### Example 2: Post-hoc tests for 1-way repeated-measures ANOVA
 
-With the same ease, we can test simultaneously the autocorrelation at several lags using the 
-multiple comparison version of the correlation test.
+When a 1-way ANOVA for repeated measures is significant, it is most often of interest to examine
+the differences between the treatment all taken pair-wise to understand where the significance comes from.
+Formally, given ``K`` treatments the null hypothesis of the ANOVA is stated such as 
 
-This is achieved by calling the [`_permMcTest!`](@ref), which ultimately performs all 
-[multiple comparisons tests](@ref "Multiple comparisons tests") implemented in the package.
-Now we craete a vector `x` and a vector `Y` holding as many lagged versions of `x` as we wish to test:
+``H_0: μ_1= ... =μ_K``.
 
-Let us create some data autorrelated at lag 1 and 2 to get a working example:
+Post-hoc tests take the form
+
+``H_0: μ_i=μ_j, i≠j=1,...,K``
+
+and can be tested as a series of t-tests for repeated measures.
+
+The post-hoc tests are to be done simultaneously and a correction for multiple comparisons is to be applied.
+A control of the family-wise error rate in the strong sense is achieved with a multiple-comparison
+permutation test, as shown in the example below:
 
 ```julia
 using PermutationTests
 
-N=300
-data=randn(N) 
-for j=1:2, i=2:length(data)
-  data[i-1]=data[i-1]+data[i]
+N=12 # Number of observation units per treatment
+K=3 # Number of treatments
+
+# Some random Gaussian data for example
+# The last (third) treatment will have mean higher than the other two
+yvec = [randn(K) for n=1:N];  
+for n=1:N
+    yvec[n][K]+=2.0
 end
+t = anovaTestRM(yvec) # ANOVA test
 
-# We will test lags 1 to 30
-lags=1:30 
-x=data[1:end-length(lags)]
-Y=[data[l+1:end-length(lags)+l] for l in lags]
+# Let us create the K(K-1)/2 all-pair-wise difference vectors
+NK=N*K
+y=vcat(yvec...)
+d12=y[1:K:NK].-y[2:K:NK]
+d13=y[1:K:NK].-y[3:K:NK]
+d23=y[2:K:NK].-y[3:K:NK]
+
+# post-hoc tests
+pht = studentMcTestRM([d12, d13, d23])
 ```
+Verify that the second and third p-value in `pht.p` are significant. Inspecting the mean of `d12`, `d13` and `d23` will reveal the form of the effect across tratments.
 
-Our muliple comparisons test on autocorrelations is
-
+A general code for post-hoc test (for any `K`) is:
 ```julia
-tMc = _permMcTest!(copy(x), Y, N-length(lags), PearsonR(), PearsonR())
+d=[y[i:K:NK].-y[j:K:NK] for i=1:K, j=1:K if i≠j && j>i]
+pht2 = studentMcTestRM(d)
 ```
 
-The p-values are retrived by 
 
-```julia
-tMc.p # p-values for lags 1...30 
-```
 
-Notice that the test above is different from the 
-[Liung-Box test](https://en.wikipedia.org/wiki/Ljung%E2%80%93Box_test),
-which is a multivariate test for a group of lags:
-with a multiple comparison tests we have tested each lag
-in the group *simultaneously*, controlling the family-wise error (FWE) rate at the nominal level
-(0.05 by default). Thus on the base of the p-values 
-*we can take a decision on the null hypothesis at each lag*.
-
-As we have done for the univariate test, we may want to wrap the call in a friendly function.
-This is left as an exercise.
+!!! warning "Nota Bene"
+    Note that post-hoc tests cannot be trivially performed by data permutation as here above in the case of a 1-way ANOVA for independent samples.
 
 ---
 
@@ -329,7 +339,7 @@ As an exercise, wrap the test we have created in a friendly function.
 ---
 
 
-### Example 4: multiple comparison correlation test
+### Example 4: multiple comparisons correlation test
 
 We create another version of the Pearson product-moment correlation test between a fixed variable given as a vector `x` and ``M`` variables given as a vector of ``M`` vectors `Y`. We want to test simultaneously 
 all correlations between `x` and `Y[m]`, for ``m=1...M``.
@@ -648,32 +658,6 @@ function dm(x, n; pnorm=2)
     return D
 end    
 
-
-# x and y are vectors holding n realizations of (real or complex) scalars, vectors, 
-# matrices... The elements in y must not have the same dimension as those in x, 
-# however x and y must hold the same number of elements.
-# Return H*Dx*H' and H*Dy*H', 
-# H is the centering matrices and Dx and Dy are the 
-# distance matrices for x and y according to norm `pnorm`. 
-function getDistances(x, y; pnorm=2)
-    n = length(x)
-    H = Matrix{Float64}(I, n, n) - fill(1/n, n, n)
-    Hm = LinearAlgebra.Hermitian
-    return H * Hm(dm(x, n; pnorm)) * H', H * Hm(dm(y, n; pnorm)) * H'
-end
-
-# As `getDistances`, but here Y is a k-vector of vectors of realizations,
-# thus, return H*Dx*H' and H*Dy1*H',...,H'*Dyk*H', 
-# In addition to the restrictions of `getDistances`, the k vectors of Y must
-# contain elements of the same size.
-function getMDistances(x, Y; pnorm=2)
-    # Centering matrices
-    n = length(x)
-    H = Matrix{Float64}(I, n, n) - fill(1/n, n, n)
-    Hm = LinearAlgebra.Hermitian
-    return H * Hm(dm(x, n; pnorm)) * H', [H * Hm(dm(y, n; pnorm)) * H' for y ∈ Y]
-end
-
 # Distance variance. Eq. (2.9) in Székemy, Rizzo and Bakirov(2007). 
 # D is a distance matrix
 dVar(D) = sum(x->abs2(x), D)/size(D, 1)^2  
@@ -739,13 +723,15 @@ compute the distance correlation. The quantities that are invariant by permutati
 are passed to the function so that we do not need to recompute them.
 
 ```julia
-function testStatistic(p, Dy, stat::Dcor; H, P, Dx, dVarDy, kwargs...)
-   permMatrix!(P, p)
+function testStatistic(x, HDyH, stat::Dcor; H, P, Dx, dVarHDyH, kwargs...)
+   permMatrix!(P, x)
    # Hx * P * Dx * P' * Hx', Dx with rows and columns permuted
-   HxPDxPHx = H * (P * Dx * P') * H' 
-   den = dVar(HxPDxPHx) * dVarDy # square of the denominator of dCor 
-   return den > 0 ? sqrt(dCov(HxPDxPHx, Dy)/sqrt(den)) : 0. # dCor
+   HP = H*P
+   HxPDxPHx = HP * Dx * HP' # permuted and double centered Dx
+   den = dVar(HxPDxPHx) * dVarHDyH # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
+   return den > 0 ? sqrt(dCov(HxPDxPHx, HDyH)/sqrt(den)) : 0. # dCor
 end
+
 ```
 Finally, we write a function preparing the data and calling the [`_permTest!`](@ref) function.
 The preparation involves computing the distance matrices (once and for all),
@@ -759,19 +745,22 @@ the vector with the indices in the natural order ``1...n``.
 ```julia
 # The test takes as input two vectors of elements, which may be scalars, vectors or matrices.
 function dCorPermTest(x, y; pnorm=2, kwargs...)
-   Dx, Dy = getDistances(x, y; pnorm) 
-   n = size(Dx, 1)
-   size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square"))
-   size(Dx) == size(Dy) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
-   p = collect(Base.OneTo(n)) # permutation vector
+    n = length(x)
+    Dx = Hermitian(dm(x, n; pnorm)) 
+    Dy = Hermitian(dm(y, n; pnorm)) 
    
-   #  the centering matrix, the identity matrix, Dx, dVar(Dy)
-   Id = Matrix{Float64}(I, n, n)
-   H = Id - fill(1/n, n, n) # the centering matrix
-   P = copy(Id) # the permutation matrix
-   dVarDy = dVar(Dy) # the distance variace of Dy (invariant to permutations)
+    size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square"))
+    size(Dx) == size(Dy) || throw(ArgumentError("Function dCorPermTest: Did you want to call dCorPermMTest intead? The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
+    p = collect(Base.OneTo(n)) # permutation vector
+   
+    #  the centering matrix, the identity matrix, HDyH, dVar(HDyH)
+    Id = Matrix{Float64}(I, n, n)
+    H = Id - fill(1/n, n, n) # the centering matrix
+    P = copy(Id) # the permutation matrix
+    HDyH = H * Dy * H'
+    dVarHDyH = dVar(HDyH) # the distance variace of HDyH (invariant to permutations)
 
-   return _permTest!(p, Dy, n, Dcor(), PearsonR(); fstat=identity, H, P, Dx, dVarDy, kwargs...)
+    return _permTest!(p, HDyH, n, Dcor(), PearsonR(); fstat=identity, H, P, Dx, dVarHDyH, kwargs...)
 end
 ```
 
@@ -795,7 +784,7 @@ perm = dCorPermTest(x, y; switch2rand=1)
 
 ---
 
-### Example 8: multiple comparison distance correlation
+### Example 8: multiple comparisons distance correlation
 
 This example reuses the code we have already written for the previous
 [example 7](@ref "Example 7: univariate distance correlation").
@@ -810,49 +799,49 @@ is here below. As compared to the previous example, note that:
 - we are similarly also passing the distance variance of Dx `dVarDx` as a keyword argument for the same reason.
 
 Note also
-- the sytax `[:]` to update variables passed as keyword 
-- the fact that `dVarDx` is passed as a vector of one element so as to be possible to update it thanks to the syntax `[:]`.
+- the syntax `[:]` to update variables passed as keyword 
+- the fact that `dVarHDxH` is passed as a vector of one element so as to be possible to update it thanks to the syntax `[:]`.
 
 
 ```julia
-function testStatistic(x, DY, m::Int, stat::Dcor; H=H, P=P, Dx, dVarDY, HPDxPH, dVarDx, kwargs...)
+function testStatistic(x, HDYH, m::Int, stat::Dcor; H=H, P=P, Dx, dVarHDYH, HxPDxPHx, dVarHDxH, kwargs...)
     if m==1
         permMatrix!(P, x)
         # Hx * P * Dx * P' * Hx', Dx with rows and columns permuted 
         HP = H * P
-        HPDxPH[:] = HP * Dx * HP'  # notice the [:] syntax; this kwarg is updated when m=1
-        dVarDx[:] = [dVar(HPDxPH)] # notice the [:] syntax; this kwarg is updated when m=1
+        HxPDxPHx[:] = HP * Dx * HP'  # notice the [:] syntax; this kwarg is updated when m=1
+        dVarHDxH[:] = [dVar(HxPDxPHx)] # notice the [:] syntax; this kwarg is updated when m=1
     end
     
-    den = dVarDx[1] * dVarDY[m] # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
-    return den > 0 ? sqrt(dCov(HPDxPH, DY[m])/sqrt(den)) : 0. # dCor
- end
+    den = dVarHDxH[1] * dVarHDYH[m] # dVar(Dx) * dVar(Dy), square of the denominator of dCor 
+    return den > 0 ? sqrt(dCov(HxPDxPHx, HDYH[m])/sqrt(den)) : 0. # dCor
+end
  
 
 function dCorPermMTest(x, Y; pnorm=2, kwargs...)
-    Dx, DY = getMDistances(x, Y; pnorm) 
-
-    # checks
+    n = length(x)
+    Dx = Hermitian(dm(x, n; pnorm)) 
+    DY = [Hermitian(dm(y, n; pnorm)) for y ∈ Y] 
     size(Dx, 1) == size(Dx, 2) || throw(ArgumentError("Function dCorPermMTest: The `Dx` and `Dy` distance matrices that have been computed are not square"))
     size(Dx) == size(DY[1]) || throw(ArgumentError("Function dCorPermMTest: The `Dx` and `Dy` distance matrices that have been computed are not square or do not have the same size"))
     length(unique(size.(DY, 1))) == 1 || throw(ArgumentError("Function dCorPermMTest: All elements of second data input must have equal size"))
-    
     n = size(Dx, 1)
     p = collect(Base.OneTo(n)) # permutation vector
-    Id = Matrix{Float64}(I, n, n)
 
     # keyword arguments that are not updated
+    Id = Matrix{Float64}(I, n, n)
     H = Id - fill(1/n, n, n)
-    dVarDY = [dVar(Dy) for Dy ∈ DY]
+    P = copy(Id) 
+    HDYH = [H*Dy*H' for Dy ∈ DY]
+    dVarHDYH = dVar.(HDYH)
 
     # Initialize keyword arguments that will be updated
-    HPDxPH = Matrix{Float64}(undef, size(Dx)...)
-    dVarDx = [0.0] # NB, cannot pass a scalar as kwarg if it is to be updated!
-    P = copy(Id) # The first permutation must correspond to 'no permutation'
+    HxPDxPHx = Matrix{Float64}(undef, size(Dx)...)
+    dVarHDxH = [0.0] # NB, cannot pass a scalar as kwargs if it is to be updated!
 
-    return _permMcTest!(p, DY, n, Dcor(), PearsonR(); 
-                        fstat=identity, threaded=false, H, P, Dx, dVarDY, HPDxPH, dVarDx, kwargs...)
- end
+    return _permMcTest!(p, HDYH, n, Dcor(), PearsonR(); 
+                        fstat=identity, threaded=false, H, P, Dx, dVarHDYH, HxPDxPHx, dVarHDxH, kwargs...)
+end
 
 ```
 ---

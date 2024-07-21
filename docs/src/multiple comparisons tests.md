@@ -28,9 +28,9 @@ You may also find useful the tests we have created as examples of how to create 
 
 | Test | 
 |:----------|
-| [Autocorrelation](@ref "Example 2: multiple comparison autocorrelation test") |
+| [Post-hoc tests for 1-way repeated-measures ANOVA](@ref "Example 2: Post-hoc tests for 1-way repeated-measures ANOVA") |
 | [Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
-| [Distance correlation](@ref "Example 8: multiple comparison distance correlation") |
+| [Distance correlation](@ref "Example 8: multiple comparisons distance correlation") |
 
 
 ---

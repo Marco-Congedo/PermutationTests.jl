@@ -790,16 +790,18 @@ function anovaMcTestRM(Yvec::UniDataVec²; <same kwargs>)
 **METHOD (1)**
 
 Multiple comparison [1-way analysis of variance (ANOVA) for repeated measures](https://en.wikipedia.org/wiki/Repeated_measures_design#Repeated_measures_ANOVA) 
-by data permutation. Given ``M`` hypotheses, each with ``N`` observation units (e.g., *subjects*, *blocks*, etc.) 
-for each of ``K`` repeated measures (e.g., *treatments*, *time*, etc.), the null hypotheses have form
+by data permutation. Given ``M`` hypotheses, each with ``K`` repeated measures (e.g., treatments, time, etc.) for each of ``N`` observation units 
+(e.g., subjects, blocks, etc.), the null hypotheses have form
 
 ``H_0(m): μ_{m1}= \\ldots =μ_{mk}, \\quad m=1...M``,
 
 where ``μ_{mk}`` is the mean of the ``k^{th}`` treatment for the ``m^{th}`` hypothesis. 
 
-`Y` is a vector hoding ``M`` vectors, each one concatenaning the observations for the ``K`` treatments 
-in the natural order, that is, the ``N`` observation for treatment 1, ..., 
-the ``N`` observations for treatment ``K``. Thus, `Y` holds ``M`` vectors of ``N \\cdot K`` elements. 
+`Y` is a vector hoding ``M`` vectors, each one concatenaning the ``K`` treatments (treatment 1,..., treatment ``K``) 
+for each observation for the ``m^{th}`` hypothesis in this order:
+the ``K`` treatments for observation 1, the ``K`` treatments for observation 2, ..., 
+the ``K`` treatments for observation ``N``.
+Thus, `Y` holds ``M`` vectors of ``N \\cdot K`` elements. 
 
 `ns` is a julia [named tuple](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types) 
 with form `(n=N, k=K)` (see examples below).
@@ -816,7 +818,8 @@ Return a [MultcompTest](@ref) structure.
 
 **METHOD (2)**
 
-As (1), but `Yvec` is a vector of ``M`` vectors, each one holding the ``K`` vectors of ``N`` observations.
+As (1), but `Yvec` is a vector of ``M`` vectors, each one holding ``N`` vectors holding each the ``K`` treatments for the ``n^{th}`` 
+subject (see examples below).
 
 *Examples*
 
@@ -826,7 +829,7 @@ using PermutationTests
 N=6 # number of observation units per treatment
 K=3 # number of treatments
 M=10 # number of hypotheses
-Yvec = [[randn(N) for k=1:K] for m=1:M]; # some random Gaussian data for example 
+Yvec = [[randn(K) for n=1:N] for m=1:M]; # some random Gaussian data for example 
 t = fMcTestRM([vcat(yvec...) for yvec in Yvec], (n=N, k=K)) 
 # ANOVA tests are always bi-directional
 ```
@@ -839,6 +842,8 @@ tapprox = fMcTestRM([vcat(yvec...) for yvec in Yvec], (n=N, k=K);
  
 t2 = fMcTestRM(Yvec)
 println(sum(abs.(t.p - t2.p)) ≈ 0. ? "OK" : "error")
+println(sum(abs.(t.obsstat - t2.obsstat)) ≈ 0. ? "OK" : "error")
+
 
 ```
 
@@ -857,19 +862,19 @@ function anovaMcTestRM(𝐘vec::UniDataVec²;
                 fwe::Float64 = 0.05,
                 threaded::Bool = Threads.nthreads()>=4) where TestDir <: TestDirection
 
-    K = length(𝐘vec[1])
+    N = length(𝐘vec[1])
+    K = length(𝐘vec[1][1])
     K < 2 && throw(ArgumentError(📌*"Function anovaMcTestRM: the first (𝐘vec) argument must be a vector of vector of two or more vectors"))
-    N = length(𝐘vec[1][1])
     N < K && throw(ArgumentError(📌*"Function anovaMcTestRM: the length of the vectors in first argument must be greater than their number"))
     ns=(n=N, k=K)
     length(𝐘vec) == 1 && (return anovaTestRM(𝐘vec[1], ns; direction, equivalent=true, switch2rand, nperm, seed, verbose))
-    unique(length(y) for y in 𝐘vec)[1]==K || throw(ArgumentError(📌*"Function anovaMcTestRM: All vectors in first arguments (𝐘vec) must contain the same number of vectors (K). Check the documentation")) 
-    unique(length.(y) for y in 𝐘vec)[1]==repeat([N], K) || throw(ArgumentError(📌*"Function anovaMcTestIS: All vectors in first arguments (𝐘vec) must contain vectors of equal length (N). Check the documentation"))
+    unique(length(y) for y in 𝐘vec)[1]==N || throw(ArgumentError(📌*"Function anovaMcTestRM: All vectors in first arguments (𝐘vec) must contain the same number of vectors (N). Check the documentation")) 
+    unique(length.(y) for y in 𝐘vec)[1]==repeat([K], N) || throw(ArgumentError(📌*"Function anovaMcTestIS: All vectors in first arguments (𝐘vec) must contain vectors of equal length (K). Check the documentation"))
 
     if K == 2 # do t-test if there are only two groups. Actually do one-sample test on the difference         
         𝐱 = membership(StudentT_1S(), ns.n)
-        return _permMcTest!(𝐱, [𝐲[1].-𝐲[2] for 𝐲 ∈ 𝐘vec], ns.n, StudentT_1S(), StudentT_1S(); stepdown, fwe, nperm, fstat=_fstat(direction), switch2rand, seed, threaded, verbose)
-    else 
+        return _permMcTest!(𝐱, [[𝐲vec[n][1] for n=1:N]-[𝐲vec[n][2] for n=1:N] for 𝐲vec ∈ 𝐘vec], ns.n, StudentT_1S(), StudentT_1S(); stepdown, fwe, nperm, fstat=_fstat(direction), switch2rand, seed, threaded, verbose)
+    else   #[𝐲[1].-𝐲[2] for 𝐲 ∈ 𝐘vec]
         !(direction isa Both) && throw(ArgumentError(📌*"Function anovaMcTestRM: The ANOVA test can only be bi-directional. Correct the `direction keyword argument`")) 
         𝐱 = membership(AnovaF_RM(), ns)
         return _permMcTest!(𝐱, [vcat(𝐲...) for 𝐲 ∈ 𝐘vec], ns, AnovaF_RM(), AnovaF_RM(); stepdown, fwe, nperm, fstat=_fstat(direction), switch2rand, seed, threaded, verbose)

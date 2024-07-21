@@ -653,7 +653,8 @@ statistic(𝐱::IntVec, 𝐲::UniData, stat::Group1Total_IS; kwargs...) = _cond�
 # --------------------------------------------------------------------
 
 # Sum the elements of 𝐲 if mod1(x, k)==k, where x are the elements of 𝐱 corresponding to the elements of 𝐲.
-# For Rep Meas ANOVA-like statistics the data is arranged as s1t1, s1t2, ..., s1tk, s2t1, s2t2,...,s2tk,... ... sntk.
+# For Rep Meas ANOVA-like statistics the data is arranged as s1t1, s1t2, ..., s1tk, s2t1, s2t2,...,s2tk,... ... sntk,
+# where s is subjects and t is treatment.
 # This function then return the total for each treatement k. 
 # 𝐱 must be of the form [1,..., nk]o r any valid permutation, for example for n=2, k=3 
 # the observed statistic is given by 𝐱=[1 2 3 4 5 6] and a valid permutation is [2 1 3 6 5 4].
