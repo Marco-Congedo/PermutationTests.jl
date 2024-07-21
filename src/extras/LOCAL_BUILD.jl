@@ -17,7 +17,7 @@
 #   3) Run this sript (With VS code, click anywhere here and hit ALT+Enter)
 #
 begin
-  juliaCodeDir = joinpath(homedir(),"Documents", "@ Documenti", "Code", "julia")
+  juliaCodeDir = joinpath(homedir(),"Documents", "Documenti", "Code", "julia")
   scrDir       = joinpath(juliaCodeDir, "PermutationTests", "src")
   docsDir      = joinpath(juliaCodeDir, "PermutationTests", "docs")
 

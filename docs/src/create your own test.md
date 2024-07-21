@@ -19,13 +19,13 @@ The illustration proceeds by examples of increasing complexity.
 | Serial | Examples | 
 |:----------:|:----------|
 | 1 | [Univariate autocorrelation test](@ref "Example 1: univariate autocorrelation test") |
-| 2 | [Multiple comparison autocorrelation test](@ref "Example 2: multiple comparison autocorrelation test") |
+| 2 | [Post-hoc tests for 1-way repeated-measures ANOVA](@ref "Example 2: Post-hoc tests for 1-way repeated-measures ANOVA") |
 | 3 | [Univariate t-test for independent samples](@ref "Example 3: univariate t-test for independent samples") |
-| 4 | [Multiple comparison correlation test](@ref "Example 4: multiple comparison correlation test") |
+| 4 | [Multiple comparison correlation test](@ref "Example 4: multiple comparisons correlation test") |
 | 5 | [Univariate Chatterjee correlation](@ref "Example 5: univariate Chatterjee correlation") |
 | 6 | [Multiple comparisons Chatterjee correlation](@ref "Example 6: multiple comparisons Chatterjee correlation") |
 | 7 | [Univariate distance correlation](@ref "Example 7: univariate distance correlation") |
-| 8 | [Multiple comparison distance correlation](@ref "Example 8: multiple comparison distance correlation") |
+| 8 | [Multiple comparison distance correlation](@ref "Example 8: multiple comparisons distance correlation") |
 
 
 ## Using existing tests
@@ -87,56 +87,66 @@ By default the test is bi-directional, thus the above call is a test for the aut
 Our function `autocorTest` accepts all optional keyword arguments of the [`_permTest!`](@ref) function,
 thus we can easily obtain exact or approximate tests with a specified number of permutations, left- or right-directional tests, etc. 
 
+!!! warning "Nota Bene"
+    A multiple comparisons test for autocorrelation, that is, one testing for the autocorrelation at several lags simultaneously, cannot be done trivially by data permutation. See for example Romano and Tirlea (2022). For this reason such a test is not given as an example here below.
+    **Reference**: J.P. Romano, M.A. Tirlea (2022) Permutation testing for dependence in time series. Journal of Time Series Analysis, 43(5), 781-807.
+
 ---
 
-### Example 2: multiple comparisons autocorrelation test
+### Example 2: Post-hoc tests for 1-way repeated-measures ANOVA
 
-With the same ease, we can test simultaneously the autocorrelation at several lags using the 
-multiple comparison version of the correlation test.
+When a 1-way ANOVA for repeated measures is significant, it is most often of interest to examine
+the differences between the treatment all taken pair-wise to understand where the significance comes from.
+Formally, given ``K`` treatments the null hypothesis of the ANOVA is stated such as 
 
-This is achieved by calling the [`_permMcTest!`](@ref), which ultimately performs all 
-[multiple comparisons tests](@ref "Multiple comparisons tests") implemented in the package.
-Now we craete a vector `x` and a vector `Y` holding as many lagged versions of `x` as we wish to test:
+``H_0: μ_1= ... =μ_K``.
 
-Let us create some data autorrelated at lag 1 and 2 to get a working example:
+Post-hoc tests take the form
+
+``H_0: μ_i=μ_j, i≠j=1,...,K``
+
+and can be tested as a series of t-tests for repeated measures.
+
+The post-hoc tests are to be done simultaneously and a correction for multiple comparisons is to be applied.
+A control of the family-wise error rate in the strong sense is achieved with a multiple-comparison
+permutation test, as shown in the example below:
 
 ```julia
 using PermutationTests
 
-N=300
-data=randn(N) 
-for j=1:2, i=2:length(data)
-  data[i-1]=data[i-1]+data[i]
+N=12 # Number of observation units per treatment
+K=3 # Number of treatments
+
+# Some random Gaussian data for example
+# The last (third) treatment will have mean higher than the other two
+yvec = [randn(K) for n=1:N];  
+for n=1:N
+    yvec[n][K]+=2.0
 end
+t = anovaTestRM(yvec) # ANOVA test
 
-# We will test lags 1 to 30
-lags=1:30 
-x=data[1:end-length(lags)]
-Y=[data[l+1:end-length(lags)+l] for l in lags]
+# Let us create the K(K-1)/2 all-pair-wise difference vectors
+NK=N*K
+y=vcat(yvec...)
+d12=y[1:K:NK].-y[2:K:NK]
+d13=y[1:K:NK].-y[3:K:NK]
+d23=y[2:K:NK].-y[3:K:NK]
+
+# post-hoc tests
+pht = studentMcTestRM([d12, d13, d23])
 ```
+Verify that the second and third p-value in `pht.p` are significant. Inspecting the mean of `d12`, `d13` and `d23` will reveal the form of the effect across tratments.
 
-Our muliple comparisons test on autocorrelations is
-
+A general code for post-hoc test (for any `K`) is:
 ```julia
-tMc = _permMcTest!(copy(x), Y, N-length(lags), PearsonR(), PearsonR())
+d=[y[i:K:NK].-y[j:K:NK] for i=1:K, j=1:K if i≠j && j>i]
+pht2 = studentMcTestRM(d)
 ```
 
-The p-values are retrived by 
 
-```julia
-tMc.p # p-values for lags 1...30 
-```
 
-Notice that the test above is different from the 
-[Liung-Box test](https://en.wikipedia.org/wiki/Ljung%E2%80%93Box_test),
-which is a multivariate test for a group of lags:
-with a multiple comparison tests we have tested each lag
-in the group *simultaneously*, controlling the family-wise error (FWE) rate at the nominal level
-(0.05 by default). Thus on the base of the p-values 
-*we can take a decision on the null hypothesis at each lag*.
-
-As we have done for the univariate test, we may want to wrap the call in a friendly function.
-This is left as an exercise.
+!!! warning "Nota Bene"
+    Note that post-hoc tests cannot be trivially performed by data permutation as here above in the case of a 1-way ANOVA for independent samples.
 
 ---
 

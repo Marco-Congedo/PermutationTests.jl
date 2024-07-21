@@ -826,15 +826,16 @@ function anovaTestRM(yvec::UniDataVec; <same kwargs>)
 METHOD (1)
 
 Univariate [1-way analysis of variance (ANOVA) for repeated measures](https://en.wikipedia.org/wiki/Repeated_measures_design#Repeated_measures_ANOVA) 
-by data permutation. Given ``N`` observation units (e.g., subjects, blocks, etc.) for each of ``K`` repeated measures 
-(e.g., treatments, time, etc.), the null hypothesis has form
+by data permutation. Given ``K`` repeated measures (e.g., treatments, time, etc.) for each of ``N`` observation units 
+(e.g., subjects, blocks, etc.), the null hypothesis has form
 
 ``H_0: μ_1= \\ldots =μ_K``,
 
 where ``μ_k`` is the mean of the ``k^{th}`` treatment. 
 
-`y` is a vector concatenaning the observations for the ``K`` treatments in the natural order, that is,
-the ``N`` observation for treatment 1, ..., the ``N`` observations for treatment ``K``.
+`y` is a vector concatenaning the ``K`` treatments (treatment 1,..., treatment ``K``) for each observation in this order:
+the ``K`` treatments for observation 1, the ``K`` treatments for observation 2, ..., 
+the ``K`` treatments for observation ``N``.
 Thus, `y` holds ``N \\cdot K`` elements. 
 
 `ns` is a julia [named tuple](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types) 
@@ -863,8 +864,8 @@ Both methods return a [UniTest](@ref) structure.
 
 METHOD (2)
 
-As (1), but `yvec` is a vector of K vectors holding the observations for the ``k^{th}`` 
-measurement (see examples below).
+As (1), but `yvec` is a vector of ``N`` vectors holding each the ``K`` treatments for the ``n^{th}`` 
+subject (see examples below).
 
 *Examples*
 
@@ -873,7 +874,7 @@ measurement (see examples below).
 using PermutationTests
 N=6; # number of observation units
 K=3; # number of measurements
-y = [randn(N) for k=1:K] # some random Gaussian data for example 
+y = [randn(K) for n=1:N] # some random Gaussian data for example 
 t = fTestRM(vcat(y...), (n=N, k=K)) # ANOVA tests are always bi-directional
 ```
 
@@ -903,19 +904,20 @@ function anovaTestRM(𝐲vec::UniDataVec;
                 seed::Int = 1234, 
                 verbose::Bool = true) where TestDir <: TestDirection
 
-    K = length(𝐲vec)
+    N = length(𝐲vec)
+    K = length(𝐲vec[1])
     K < 2 && throw(ArgumentError(📌*"Function anovaTestRM: the first argument (𝐲vec) must be a vector of two or more vectors"))
-    nn = length(unique(length(𝐲vec)))
-    nn ≠ 1 && throw(ArgumentError(📌*"Function anovaTestRM: For a repeated-measure ANOVA all vectors in argument `𝐲vec` must be of the same length"))
-    N = length(𝐲vec[1])
+    kk = length(unique(length(𝐲vec)))
+    kk ≠ 1 && throw(ArgumentError(📌*"Function anovaTestRM: For a repeated-measure ANOVA all vectors in argument `𝐲vec` must be of the same length"))
     N < K && throw(ArgumentError(📌*"Function anovaTestRM: the length of the vectors in first argument (𝐲vec) must be greater than their number"))
     if K == 2
         stat = StudentT_1S() # do t-test if there are only two groups. Actually do one-sample test on the difference
-        return _permutationTest!(𝐲vec[1].-𝐲vec[2], N, direction, equivalent, switch2rand, nperm, seed, verbose)
+        return _permutationTest!([𝐲vec[n][1] for n=1:N]-[𝐲vec[n][2] for n=1:N], N, direction, equivalent, switch2rand, nperm, seed, verbose)
     else
         stat = AnovaF_RM() 
         !(direction isa Both) && throw(ArgumentError(📌*"Function anovaTestRM: The ANOVA test can only be bi-directional. Correct the `direction keyword argument`")) 
         ns=(n=N, k=K) 
+        #ns=(n=K, k=N) 
         return _permutationTest(vcat(𝐲vec...), ns, stat, direction, equivalent, switch2rand, nperm, seed, verbose)
     end
 end
