@@ -255,7 +255,7 @@ y=[4., 5., 6., 7., 1., 2., 3]
 ns=[4, 3] # N1=4, N2=3
 ```
 
-For the permuttaion vector the dedicated function `membership` is available:
+For the permutation vector the dedicated function `membership` is available:
 ```julia
 x=membership(StudentT_IS(), ns) # = [repeat ([1], N1); repeat([2], N2)]
 ```
@@ -893,7 +893,7 @@ perm = dCorPermMTest(x, Y)
 
 In conclusion, in the above examples we have illustrated how to create permutation tests of increasing complexity.
 The last two examples concerns tests that are pretty complex and very different from any of the test
-implemented in *Permutationtests.jl*, where even the permutation scheme had to be defined differently.
+implemented in *PermutationTests.jl*, where even the permutation scheme had to be defined differently.
 The diverse procedures exposed here above can be adapted to new problems in order to
 create a countless number of new permutation tests.
 

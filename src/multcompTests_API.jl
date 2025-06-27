@@ -1021,7 +1021,7 @@ and `threaded` see [here](@ref "Common kwargs for multiple comparisons tests").
 *Directional tests, permutation scheme and number of permutations for exact tests:* as per
 *univariate version* [`studentTest1S`](@ref)
 
-*Alias:* `tTest1S` 
+*Alias:* `tMcTest1S` 
 
 Return a [MultcompTest](@ref) structure.
 
@@ -1030,7 +1030,7 @@ Return a [MultcompTest](@ref) structure.
 using PermutationTests
 N=20 # number of observations
 M=100 # number of hypotheses
-y = [randn(N) for m=1:M]; # some random Gaussian data for example
+Y = [randn(N) for m=1:M]; # some random Gaussian data for example
 t = tMcTest1S(Y) # By deafult the test is bi-directional
 
 tR = tMcTest1S(Y; direction=Right()) # right-directional test
@@ -1078,7 +1078,7 @@ function studentMcTest1S!(<same args and kwargs as `studentMcTest1S`>)
 
 As [`studentMcTest1S`](@ref), but `Y` is overwritten in the case of approximate (random permutations) tests.
 
-*Alias:* `tTest1S!` 
+*Alias:* `tMcTest1S` 
 
 Univariate version: [`studentTest1S!`](@ref)
 

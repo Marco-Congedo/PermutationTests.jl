@@ -1,7 +1,7 @@
 push!(LOAD_PATH, "../src/")
 push!(LOAD_PATH, @__DIR__)
 
-using Documenter, DocumenterTools, DocumenterCitations, DocumenterInterLinks
+using Documenter
 using PermutationTests
 
 makedocs(
@@ -22,6 +22,7 @@ makedocs(
         "Extras" => Any[
             "Statistics" => "statistics.md",
             "Test statistics" => "test statistics.md",
+            "p-value combinations" => "pCombination.md",
             "Create your own test" => "create your own test.md",
             "Chose a Test" => "chose a test.md"
         ]

@@ -90,7 +90,7 @@ function correlationTest(x::UniData, y::UniData;
             nperm::Int = 20_000, 
             seed::Int = 1234, 
             standardized::Bool = false, 
-            centerd::Bool = false,
+            centered::Bool = false,
             verbose::Bool = true) where TestDir <: TestDirection
 ```
 

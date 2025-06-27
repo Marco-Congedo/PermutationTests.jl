@@ -20,7 +20,7 @@ Execute the following command in Julia's REPL:
 |:-----------------------:|:-----------------------|
 | [Random](https://docs.julialang.org/en/v1/stdlib/Random/#Random.Random) |  [Combinatorics](https://github.com/JuliaMath/Combinatorics.jl)|
 | [Statistics](https://bit.ly/2Oem3li) | [Folds](https://github.com/JuliaFolds/Folds.jl) |
-| [Test](https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test) |  |
+| [Test](https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test) | [Distributions](https://github.com/JuliaStats/Distributions.jl) |
 
 
 
@@ -42,7 +42,7 @@ First, we chose a [Type I error](https://en.wikipedia.org/wiki/Type_I_and_type_I
 
 ```@example
 using PermutationTests
-N=10 # number of observations
+N=8 # number of observations
 x, y = randn(N), randn(N) # some random Gaussian data for example
 t = rTest(x, y)
 ```
@@ -54,6 +54,8 @@ The result of the test is a structure, which fields are printed in yellow. For e
 t.p # p-value
 t.nperm # number of permutations used by the test
 ```
+
+Notice that the first time you run a test, the function will be compiled. From the second run on; it will go fast.
 
 ---
 **Multiple comparison test for correlation**
@@ -68,8 +70,8 @@ First, we fix the family-wise error [(FWE)](https://en.wikipedia.org/wiki/Family
 
 ```@example
 using PermutationTests
-N=10 # number of observations
-M=100 # number of hypotheses
+N=8 # number of observations
+M=1000 # number of hypotheses
 x, Y = randn(N), [randn(N) for m=1:M] # random Gaussian data
 t = rMcTest(x, Y) # by default the FWE is 0.05
 ```
@@ -111,7 +113,7 @@ Thanks to these characteristics, permutation tests conctitute the ideal framewor
 
 ## Overview
 
-*PermutationTests.jl* implements several *univariate* permutation tests and for all of them the corresponding *multiple comparisons* permutation tests based on the *min-p* union-intersection principle, with or without the *step down* procedure ([Holmes et *al.*, 1996; Westfall and Young, 1993](@ref "References")). 
+*PermutationTests.jl* implements several *univariate* permutation tests and for all of them the corresponding *multiple comparisons* permutation tests based on the *min-p* union-intersection principle, with or without the *step down* procedure ([Holmes et al., 1996; Westfall and Young, 1993](@ref "References")). 
 
 For multiple comparisons tests, only tha case when all hypotheses are homogeneous is considered (same test statistic, same number of observations divided in the same number of groups/measurements).
 
