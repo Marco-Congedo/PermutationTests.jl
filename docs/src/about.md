@@ -60,6 +60,9 @@ E.S. Edgington (1995), Randomization Tests, Marcel Dekker Inc.
 
 A.P. Holmes, R.C. Blair, J.D.G Watson, I. Ford (1996) Non-Parametric Analysis of Statistic Images From Functional Mapping Experiments. Journal of Cerebral Blood Flow and Metabolism 16:7-22.
 
+A. Nicholas, A. Heard, P. Rubin-Delanchy (2017) [Choosing Between Methods of Combining p-values](https://arxiv.org/pdf/1707.06897).
+
+
 F. Pesarin (2001) Multivariate Permutation Tests with applications in Biostatistics. John Wiley & Sons.
 
 E. J. G. Pitman (1937) Significance tests which may be applied to samples from any population, Royal Statistical Society Supplement, 4: 119-130 and 225-32 (parts I and II). 

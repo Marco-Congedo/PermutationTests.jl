@@ -1,9 +1,8 @@
 #=
-Main Module of the PermutationTests.jl Package
-v0.1.0
+Main Module of the PermutationTests.jl Package v0.2.1
 
 MIT License
-Copyright (c) 2024,
+Copyright (c) 2024, 2025
 Marco Congedo, CNRS, Grenoble, France:
 https://sites.google.com/site/marcocongedo/home
 =#
@@ -15,6 +14,7 @@ using Statistics: mean, var
 using Random: rand, shuffle, shuffle!, MersenneTwister
 using Combinatorics: permutations, multiset_permutations, multinomial
 using Folds: Folds, Folds.maximum
+using Distributions: Normal, Beta, Chisq, cquantile, cdf, ccdf
 
 # import
 
@@ -61,6 +61,7 @@ statistic,
 μ0σ1,
 _∑Y²kn_∑y²_∑S²k,
 _∑y²,
+
 # from tools.jl
 flip,
 assignment,
@@ -70,9 +71,11 @@ nrPerms,
 membership,
 genPerms,
 table2vec,
+
 # from uniTests.jl
 testStatistic,
 _permTest!,
+
 # from uniTests_API.jl
 correlationTest!, rTest!,
 correlationTest,  rTest,
@@ -90,8 +93,10 @@ studentTestRM!, tTestRM!,
 studentTest1S!, tTest1S!,
 studentTest1S, tTest1S,
 signTest!, signTest,
+
 # from multcompTests.jl
 _permMcTest!,
+
 # from multcompTests_API.jl
 correlationMcTest!, rMcTest!,
 correlationMcTest,  rMcTest,
@@ -108,8 +113,15 @@ studentMcTestRM, tMcTestRM,
 studentMcTestRM!, tMcTestRM!,
 studentMcTest1S!, tMcTest1S!,
 studentMcTest1S, tMcTest1S,
-signMcTest!, signMcTest
+signMcTest!, signMcTest,
 
+# from pCombination.jl
+PcombFunc,
+LiptakComb,
+FisherComb,
+PearsonComb,
+TippettComb,
+combine
 
 # Consts
 const titleFont     = "\x1b[38;5;208m" # orange
@@ -126,7 +138,6 @@ UniData = Union{AbstractVector{R}, AbstractVector{I}, AbstractVector{Bool}} wher
 UniDataVec = Union{AbstractVector{Vector{R}}, AbstractVector{Vector{I}}, AbstractVector{Vector{Bool}}} where {R<:Real, I<:Int}
 UniDataVec² = Union{AbstractVector{Vector{Vector{R}}}, AbstractVector{Vector{Vector{I}}}, AbstractVector{Vector{Vector{Bool}}}} where {R<:Real, I<:Int}
 DataType = Union{UniData, UniDataVec, UniDataVec²}
-
 
 # Useful types
 IntVec = AbstractVector{I} where I<: Int
@@ -210,6 +221,16 @@ struct MultcompTest <: TestResult
     fwe::Float64 # in addition to UniTest
 end    
 
+# types of pCombination.jl
+
+abstract type PcombFunc end
+
+# combination functions
+abstract type LiptakComb <: PcombFunc end
+abstract type FisherComb <: PcombFunc end
+abstract type PearsonComb <: PcombFunc end
+abstract type TippettComb <: PcombFunc end
+
 
 include("stats.jl")
 include("tools.jl")
@@ -217,7 +238,7 @@ include("uniTests.jl")
 include("uniTests_API.jl")
 include("multcompTests.jl")
 include("multcompTests_API.jl")
-
+include("pCombination.jl")
 
 # Override Base.Show for UniTest and MultcompTest
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, t::Union{UniTest, MultcompTest})
