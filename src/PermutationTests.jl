@@ -2,12 +2,14 @@
 Main Module of the PermutationTests.jl Package v0.2.1
 
 MIT License
-Copyright (c) 2024, 2025
+Copyright (c) 2024, 2025, 2026
 Marco Congedo, CNRS, Grenoble, France:
 https://sites.google.com/site/marcocongedo/home
 =#
 
 module PermutationTests
+
+using PrecompileSignatures: @precompile_signatures
 
 using Base.Threads
 using Statistics: mean, var
@@ -285,5 +287,8 @@ println(" Your Machine `", separatorFont, gethostname(), defaultFont, "` (",Sys.
 println(" runs on kernel ",Sys.KERNEL, " with word size ", Sys.WORD_SIZE,".")
 println(" CPU  Threads: ", separatorFont, Sys.CPU_THREADS, defaultFont)
 println(" Base.Threads: ", separatorFont, Threads.nthreads(), defaultFont)
+
+# Generate and run `precompile` directives.
+@precompile_signatures(PermutationTests)
 
 end # module
