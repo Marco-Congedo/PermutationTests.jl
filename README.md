@@ -1,6 +1,6 @@
 ## PermutationTests.jl
 
-![Permutations gif](https://github.com/user-attachments/assets/60d34bb4-5cb2-4be6-8c8e-473fecb52ee7)
+![Permutations gif](https://github.com/user-attachments/assets/b5332aa8-5050-4587-9227-b67f65fd79a3)
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) 
 
