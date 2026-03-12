@@ -1,8 +1,10 @@
 ## PermutationTests.jl
 
-|  <img src="docs/src/assets/logo.png" height="90">   | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) | 
-|:---------------------------------------:|:--:|
+![Permutations gif](https://github.com/user-attachments/assets/60d34bb4-5cb2-4be6-8c8e-473fecb52ee7)
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) 
+
+---
 
 A fast pure-[**julia**](https://julialang.org/) package for *univariate* and *multiple comparisons* statistical *hypothesis testing* based on *permutation theory*.
 
@@ -78,6 +80,5 @@ This version has been roughly tested.
 Independent reviewers for both the code and the documentation are welcome.
 
 ---
-| **Documentation**  | 
-|:---------------------------------------:|
-| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable) |
+
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/PermutationTests.jl/stable)
