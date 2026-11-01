@@ -20,7 +20,7 @@ Distributions = "0.25.120"
 Folds = "0.2"
 PrecompileSignatures = "3.0.3"
 Statistics = "1.10"
-julia = "1"
+julia = "1.10"
 
 [extras]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
