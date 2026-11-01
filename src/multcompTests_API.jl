@@ -128,7 +128,7 @@ t001=rMcTest(x, Y; fwe=0.01) # stepdown rejects at 0.01 level instead of 0.05
 
 **Similar tests**
 
-See [correlationTest](@ref)
+See [`correlationTest`](@ref)
 
 """
 function correlationMcTest(𝐱::UniData, 𝐘::UniDataVec;
@@ -1059,7 +1059,7 @@ function studentMcTest1S(𝐘::UniDataVec;
             fwe::Float64 = 0.05,
             threaded::Bool = Threads.nthreads()>=4) where TestDir <: TestDirection
 
-    length(𝐘)==1 && (return stedentTest1S(𝐘[1]; refmean, direction, equivalent=true, switch2rand, nperm, seed, verbose))       
+    length(𝐘)==1 && (return studentTest1S(𝐘[1]; refmean, direction, equivalent=true, switch2rand, nperm, seed, verbose))       
     length(unique(length.(𝐘)))==1 || throw(ArgumentError(📌*"Function studentMcTest1S: the vectors in the first argument (𝐘) must have all equal length. Check the documentation"))
 
     _permMcTest!(membership(StudentT_1S(), length(𝐘[1])), refmean===nothing ? copy(𝐘) : [𝐲.-refmean for 𝐲 in 𝐘], length(𝐘[1]), StudentT_1S(), StudentT_1S();
@@ -1095,7 +1095,7 @@ function studentMcTest1S!(𝐘::UniDataVec;
             fwe::Float64 = 0.05,
             threaded::Bool = Threads.nthreads()>=4) where TestDir <: TestDirection 
 
-    length(𝐘)==1 && (return stedentTest1S!(𝐘[1]; refmean, direction, equivalent=true, switch2rand, nperm, seed, verbose))       
+    length(𝐘)==1 && (return studentTest1S!(𝐘[1]; refmean, direction, equivalent=true, switch2rand, nperm, seed, verbose))       
     length(unique(length.(𝐘)))==1 || throw(ArgumentError(📌*"Function studentMcTest1S!: the vectors in the first argument (𝐘) must have all equal length. Check the documentation"))
 
     _permMcTest!(membership(StudentT_1S(), length(𝐘[1])), refmean===nothing ? 𝐘 : [𝐲.-refmean for 𝐲 in 𝐘], length(𝐘[1]), StudentT_1S(), StudentT_1S();

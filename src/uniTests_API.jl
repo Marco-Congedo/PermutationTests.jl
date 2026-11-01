@@ -128,7 +128,7 @@ The exchangeability scheme consists then in shuffling the observations of vector
 
 *Aliases:* `rTest!`, [`trendTest!`](@ref)
 
-*Multiple comparisons version:* [correlationMcTest!](@ref)
+*Multiple comparisons version:* [`correlationMcTest!`](@ref)
 
 Return a [UniTest](@ref) structure.
 
@@ -162,7 +162,7 @@ correlation- or t-test statistic.
 
 If `x` or `y` represent a *trend*, for example a linear trend given by `[1, 2,...N]`, 
 we otain the permutation-based trend correlation test, which can be used to test the fit of any type of regression
-of `y` on `x` - see [trendTest](@ref).    
+of `y` on `x` - see [`trendTest`](@ref).    
 
 if `y` is a shifted version of `x` with a lag ``l``, this function will test the significance of the 
 *autocorrelation at lag ``l``, see the page [Create your own test](@ref).
@@ -209,7 +209,7 @@ As [`correlationTest`](@ref), but `x` is overwritten if neither `standardized` n
 
 *Aliases:* `rTest!`, [`trendTest!`](@ref) 
 
-*Multiple comparisons version:* [correlationMcTest!](@ref)
+*Multiple comparisons version:* [`correlationMcTest!`](@ref)
 """
 function correlationTest!(𝐱::UniData, 𝐲::UniData;
             direction::TestDir = Both(),
@@ -343,7 +343,7 @@ of reassigning the ``N`` observations in the ``K`` groups.
 
 **Alias:** `fTestIS`
 
-*Multiple comparisons version:* [anovaMcTestIS](@ref)
+*Multiple comparisons version:* [`anovaMcTestIS`](@ref)
 
 Both methods return a [UniTest](@ref) structure.
 
@@ -378,7 +378,7 @@ with this function one can obtain a permutation-based version of the [Χ² test]
 for ``K \\cdot 2`` contingency tables, which has the ability to give exact p-values. 
 For ``2 \\cdot 2`` contingency tables it yields exactly the same p-value of
 the [Fisher exact test](https://en.wikipedia.org/wiki/Fisher's_exact_test), which is also exact, as the name suggests.
-In these cases it is more convenient to use the [chiSquaredTest](@ref) and [fisherExactTest](@ref) functions though, 
+In these cases it is more convenient to use the [`chiSquaredTest`](@ref) and [`fisherExactTest`](@ref) functions though, 
 which accept contingency tables as data input. 
 
 """
@@ -709,7 +709,7 @@ in the contingency table and ``N_k`` is the ``k^{th}`` column sum.
 
 *Aliases:* `Χ²Test`, [`fisherExactTest`](@ref)
 
-*Multiple comparisons version:* [chiSquaredMcTest](@ref)
+*Multiple comparisons version:* [`chiSquaredMcTest`](@ref)
 
 Return a [UniTest](@ref) structure.
 
@@ -750,7 +750,7 @@ end
 function fisherExactTest(<same args and kwargs as `chiSquaredTest`>)
 ```
 Perform an univariate [Fisher exact test](https://en.wikipedia.org/wiki/Fisher's_exact_test) by data permutation.
-Alias for [chiSquaredTest](@ref). It can be used for ``2 \\cdot 2`` contingency tables. 
+Alias for [`chiSquaredTest`](@ref). It can be used for ``2 \\cdot 2`` contingency tables. 
 The contingency table in this case has form:
 
 | a | b |
@@ -764,7 +764,7 @@ The contingency table in this case has form:
 !!! tip "Nota Bene" 
     For ``K=2``, any input data matrix gives the same p-value as its transpose.
 
-*Multiple comparisons version:* [fisherExactMcTest](@ref)
+*Multiple comparisons version:* [`fisherExactMcTest`](@ref)
 
 Return a [UniTest](@ref) structure.
 
@@ -857,7 +857,7 @@ The exchangeability scheme consists then in reordering the ``K`` measurements wi
 
 **Alias:** `fTestRM`
 
-*Multiple comparisons version:* [anovaMcTestRM](@ref)
+*Multiple comparisons version:* [`anovaMcTestRM`](@ref)
 
 Both methods return a [UniTest](@ref) structure.
 
@@ -1149,7 +1149,7 @@ tapprox = tTest1S(y; switch2rand=1, nperm=5000)
 Typically, the input data is real, but can also be of type integer or boolean. If either `y` is a vector 
 of booleans or a vector of dicothomous data (only 0 and 1), this function will actually perform a permutation-based 
 version of the [sign test](https://en.wikipedia.org/wiki/Sign_test).
-With boolean input, use the [signTest](@ref) function.
+With boolean input, use the [`signTest`](@ref) function.
 
 Passing as data input the vector of differences of two repeated measurements, this function carries out the 
 Student's t-test for repeated measurements. If you need such a test you may want to use
